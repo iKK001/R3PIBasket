@@ -6,12 +6,23 @@
 //  Copyright © 2018 Ideen Kaffee Korner. All rights reserved.
 //
 
+import Foundation
 import UIKit
 
 class EntryViewController: UIViewController, CurrencyDelegate {
 
+    fileprivate let defaults = UserDefaults(suiteName: "ch.ideenkaffee.UserDefaults")!
+    
     @IBOutlet weak var startButtonOutlet: UIButton_iKK!
     @IBOutlet weak var currencyChoiceButtonOutlet: UIButton!
+    
+    var currencyChoice: Currency {
+        get { return Currency(rawValue: self.defaults.object(forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_CURRENCY_CHOICE) as? String ?? "USD")! }
+        set {
+            self.defaults.set(newValue.rawValue, forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_CURRENCY_CHOICE)
+            self.defaults.synchronize()
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,6 +58,7 @@ class EntryViewController: UIViewController, CurrencyDelegate {
     }
     
     func setLookAndFeel() {
+    self.currencyChoiceButtonOutlet.setTitle(self.currencyChoice.rawValue + " >", for: .normal)
         self.startButtonOutlet.cornerRadius = self.startButtonOutlet.bounds.width / 2
     }
     
@@ -75,7 +87,8 @@ class EntryViewController: UIViewController, CurrencyDelegate {
     
     // MARK: Back Delegates
     func setBackDataNow(currency: Currency) {
-        self.currencyChoiceButtonOutlet.setTitle(currency.rawValue, for: .normal)
+        self.currencyChoice = currency
+        self.currencyChoiceButtonOutlet.setTitle(currency.rawValue + " >", for: .normal)
     }
 }
 

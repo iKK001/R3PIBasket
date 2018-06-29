@@ -43,4 +43,8 @@ struct AppConstants {
     struct COLORS {
         static let COLOR_BACKGROUND = UInt(0xdac8a3)
     }
+    
+    struct USERDEFAULTS {
+        static let USER_DEFAULT_CURRENCY_CHOICE = "CurrencyChoice"
+    }
 }
