@@ -8,10 +8,15 @@
 
 import UIKit
 
-class EntryViewController: UIViewController {
+class EntryViewController: UIViewController, CurrencyDelegate {
+
+    @IBOutlet weak var startButtonOutlet: UIButton_iKK!
+    @IBOutlet weak var currencyChoiceButtonOutlet: UIButton!
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.setLookAndFeel()
         
         let currencyAPI = CurrencyPlayerAPI()
         
@@ -39,7 +44,38 @@ class EntryViewController: UIViewController {
             // if successful
             print(currencyResult)
         }
-
+    }
+    
+    func setLookAndFeel() {
+        self.startButtonOutlet.cornerRadius = self.startButtonOutlet.bounds.width / 2
+    }
+    
+    // MARK: Segue method
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        switch segue.identifier! {
+        case "goToCurrencyChoice":
+            let currencySearchVC = segue.destination as! CurrenyChoiceTableViewController
+            
+            currencySearchVC.delegate = self
+            currencySearchVC.currentTag = 0
+            currencySearchVC.title = "Currency Choice"
+        default:
+            break
+        }
+    }
+    
+    // MARK: Target-Actions
+    @IBAction func currencyChoiceButtonPressed(_ sender: Any) {
+        self.performSegue(withIdentifier: "goToCurrencyChoice", sender: nil)
+    }
+    
+    @IBAction func startButtonPressed(_ sender: Any) {
+    }
+    
+    // MARK: Back Delegates
+    func setBackDataNow(currency: Currency) {
+        self.currencyChoiceButtonOutlet.setTitle(currency.rawValue, for: .normal)
     }
 }
 
