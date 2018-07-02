@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		8F0861ED20EA4C1100199314 /* BasketModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F0861EC20EA4C1100199314 /* BasketModel.swift */; };
+		8F0861EF20EA7DB000199314 /* BasketViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F0861EE20EA7DB000199314 /* BasketViewController.swift */; };
+		8F0861F120EA874A00199314 /* BasketCustomTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F0861F020EA874A00199314 /* BasketCustomTableViewCell.swift */; };
 		8F5256C120E61A3F008CC8E8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F5256C020E61A3F008CC8E8 /* AppDelegate.swift */; };
 		8F5256C320E61A3F008CC8E8 /* EntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F5256C220E61A3F008CC8E8 /* EntryViewController.swift */; };
 		8F5256C620E61A3F008CC8E8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8F5256C420E61A3F008CC8E8 /* Main.storyboard */; };
@@ -53,6 +55,8 @@
 
 /* Begin PBXFileReference section */
 		8F0861EC20EA4C1100199314 /* BasketModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasketModel.swift; sourceTree = "<group>"; };
+		8F0861EE20EA7DB000199314 /* BasketViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BasketViewController.swift; sourceTree = "<group>"; };
+		8F0861F020EA874A00199314 /* BasketCustomTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BasketCustomTableViewCell.swift; sourceTree = "<group>"; };
 		8F5256BD20E61A3F008CC8E8 /* R3PIBasket.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = R3PIBasket.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8F5256C020E61A3F008CC8E8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		8F5256C220E61A3F008CC8E8 /* EntryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryViewController.swift; sourceTree = "<group>"; };
@@ -199,6 +203,7 @@
 			children = (
 				8F5256C220E61A3F008CC8E8 /* EntryViewController.swift */,
 				8FF9C08B20E9650F003A140C /* ProductChoiceViewController.swift */,
+				8F0861EE20EA7DB000199314 /* BasketViewController.swift */,
 				8F52570A20E63660008CC8E8 /* CurrenyChoiceTableViewController.swift */,
 			);
 			path = ViewControllers;
@@ -254,6 +259,7 @@
 			children = (
 				8F536FE020E6421300321A8D /* CurrencyCustomTableViewCell.swift */,
 				8FF9C08D20E965DB003A140C /* ProductChoiceCustomTableViewCell.swift */,
+				8F0861F020EA874A00199314 /* BasketCustomTableViewCell.swift */,
 			);
 			path = CustomTableViewCells;
 			sourceTree = "<group>";
@@ -414,7 +420,9 @@
 				8FF9C08E20E965DB003A140C /* ProductChoiceCustomTableViewCell.swift in Sources */,
 				8F536FE420E6443C00321A8D /* UIButton_iKK.swift in Sources */,
 				8F0861ED20EA4C1100199314 /* BasketModel.swift in Sources */,
+				8F0861F120EA874A00199314 /* BasketCustomTableViewCell.swift in Sources */,
 				8F5256C320E61A3F008CC8E8 /* EntryViewController.swift in Sources */,
+				8F0861EF20EA7DB000199314 /* BasketViewController.swift in Sources */,
 				8FF9C09020E96B9C003A140C /* ProductsModel.swift in Sources */,
 				8F5256F720E61BB8008CC8E8 /* iKKExtensions.swift in Sources */,
 				8F5256F320E61B29008CC8E8 /* AppConstants.swift in Sources */,

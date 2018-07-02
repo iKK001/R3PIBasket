@@ -32,6 +32,25 @@ enum ProductUnitDescription: String {
     case perCan = "per can"
 }
 
+struct GenericProduct {
+    
+    static func createProduct(productName: ProductName?) -> Product? {
+        if let productN = productName {
+            switch productN {
+            case .Peas:
+                return PeasProduct()
+            case .Eggs:
+                return EggsProduct()
+            case .Milk:
+                return MilkProduct()
+            case .Beans:
+                return BeansProduct()
+            }
+        }
+        return nil
+    }
+}
+
 struct PeasProduct: Product {
     var productName: ProductName = ProductName.Peas
     var productImage: UIImage = #imageLiteral(resourceName: "Peas")

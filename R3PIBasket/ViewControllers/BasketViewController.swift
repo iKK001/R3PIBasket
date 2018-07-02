@@ -1,5 +1,5 @@
 //
-//  ProductChoiceViewController.swift
+//  BasketViewController.swift
 //  R3PIBasket
 //
 //  Created by Stephan Korner on 01.07.18.
@@ -9,17 +9,14 @@
 import Foundation
 import UIKit
 
-class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableViewDelegate, UITableViewDataSource {
+class BasketViewController: UIViewController, CurrencyDelegate, UITableViewDelegate, UITableViewDataSource {
     
     fileprivate let defaults = UserDefaults(suiteName: AppConstants.USERDEFAULTS.USER_DEFAULT_SUITE_NAME)!
     
-    @IBOutlet weak var productTableView: UITableView!
+    @IBOutlet weak var basketTableView: UITableView!
     @IBOutlet weak var currencyChoiceBtnOutlet: UIButton!
-    @IBOutlet weak var nrOfItemsLblOutlet: UILabel!
     
     private var conversionFactor: Float?
-    private var nrOfItems: Int?
-    var products: [Product]?
     
     // persistency of Basket
     // if more time - this would perferably be done by CoreData or Realm
@@ -68,19 +65,16 @@ class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableVi
     override func viewDidLoad() {
         
         // set delegates
-        self.productTableView.delegate = self
-        self.productTableView.dataSource = self
+        self.basketTableView.delegate = self
+        self.basketTableView.dataSource = self
         
         // allow user to tap next to keyboard and make it dissappear
         let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.hideKeyboardByTappingOutside))
         self.view.addGestureRecognizer(tap)
         
         // set properties
-        self.nrOfItemsLblOutlet.text = "\(self.basket?.itemsTypes?.count ?? 0)"
         self.currencyChoiceBtnOutlet.setTitle(self.basket?.basketCurrency.rawValue ?? "USD" + " >", for: .normal)
         
-        self.setCurrencyForAllProducts()
-        self.getNewestConversionFactor()
     }
     
     @objc func hideKeyboardByTappingOutside() {
@@ -108,73 +102,32 @@ class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableVi
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.products?.count ?? 0
+        return self.basket?.itemsTypes?.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let defaultCell = UITableViewCell(style: .default, reuseIdentifier: CellNames.ProductChoiceCell.rawValue)
-        guard let productCell = tableView.dequeueReusableCell(withIdentifier: CellNames.ProductChoiceCell.rawValue, for: indexPath) as? ProductChoiceCustomTableViewCell else {
+        let defaultCell = UITableViewCell(style: .default, reuseIdentifier: CellNames.BasketCell.rawValue)
+        guard let basketCell = tableView.dequeueReusableCell(withIdentifier: CellNames.BasketCell.rawValue, for: indexPath) as? BasketCustomTableViewCell else {
             return defaultCell
         }
         
         // define look and feel
-        productCell.selectionStyle = .none
-        productCell.configureCell(tag: indexPath.row)
+        basketCell.selectionStyle = .none
+        basketCell.configureCell(tag: indexPath.row)
         
         // 1st: assign the product
-        productCell.product = self.products![indexPath.row]
-        // 2nd: calculateConversion (order matters!)
-        productCell.calculateConversion(conversionFactor: self.conversionFactor)
-        
-        // completion-handler when AddBasket-Button of a cell is pressed
-        productCell.addToBasketBtnCompletion = { tag in
-            self.setNewAmountForProduct(tag: tag, amount: Int(productCell.nrOfProductsTextField.text ?? "") ?? 0)
-            self.setNewAmountInBasket(productName: ProductName(rawValue: productCell.productName.text ?? ""), amount: Int(productCell.nrOfProductsTextField.text ?? "") ?? 0)
-            self.updateNrOfItemsInBasket(tag: tag)
+        if let anyProduct = GenericProduct.createProduct(productName: self.basket?.itemsTypes?[indexPath.row]) {
+            basketCell.product = anyProduct
         }
 
-        return productCell
+        // 2nd: calculateConversion (order matters!)
+        basketCell.calculateConversion(conversionFactor: self.conversionFactor)
+
+        return basketCell
     }
     
     // MARK: Helper functions
-    func setCurrencyForAllProducts() {
-        // set currency for all products
-        // TODO: Make [Products]() confrom to Sequence-Type to make this easier
-        if let products = self.products {
-            var i = 0
-            for _ in products {
-                self.products?[i].productCurrency = self.basket?.basketCurrency ?? .USD
-                i = i + 1
-            }
-        }
-    }
-    
-    func setNewAmountForProduct(tag: Int, amount: Int) {
-        self.products?[tag].nrOfProducts = amount
-    }
-    
-    func setNewAmountInBasket(productName: ProductName?, amount: Int) {
-        if let _ = self.basket?.productAmounts,
-            let prodName = productName {
-            self.basket?.productAmounts![prodName] = amount
-        }
-    }
-    
-    func updateNrOfItemsInBasket(tag: Int) {
-        
-        // if basket does not contain product-Item, add it
-        if let items = self.basket?.itemsTypes,
-            let name = self.products?[tag].productName {
-            if !items.contains(name) {
-                self.basket?.itemsTypes?.append(name)
-                let amount = self.products?[tag].nrOfProducts
-                self.basket?.productAmounts?[name] = amount ?? 0
-            }
-        }
-        self.nrOfItems = self.basket?.itemsTypes?.count
-        self.nrOfItemsLblOutlet.text = "\(self.nrOfItems ?? 0)"
-    }
     
     // MARK: Network-calls
     
@@ -211,7 +164,7 @@ class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableVi
                 self.conversionFactor = currencyResult?.quotes?.getFirstNonNilValue()
                 // reload tableView with new conversion-factor
                 DispatchQueue.main.async {
-                    self.productTableView.reloadData()
+                    self.basketTableView.reloadData()
                 }
             }
         }
@@ -225,8 +178,11 @@ class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableVi
         self.performSegue(withIdentifier: SegueNames.GoToCurrencyChoice.rawValue, sender: nil)
     }
     
-    @IBAction func goToBasketBtnPressed(_ sender: Any) {
-        self.performSegue(withIdentifier: SegueNames.GoToBasket.rawValue, sender: nil)
+    @IBAction func continueShoppingBtnPressed(_ sender: Any) {
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    @IBAction func goToPaymentBtnPressed(_ sender: Any) {
     }
     
     // MARK: Delegate callbacks
@@ -234,7 +190,5 @@ class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableVi
     func setBackDataNow(currency: Currency) {
         self.basket?.basketCurrency = currency
         self.currencyChoiceBtnOutlet.setTitle(currency.rawValue + " >", for: .normal)
-        self.setCurrencyForAllProducts()
-        self.getNewestConversionFactor()
     }
 }

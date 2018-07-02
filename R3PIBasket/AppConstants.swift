@@ -16,6 +16,18 @@ extension Notification.Name {
     }
 }
 
+// Storyboard String definitions
+enum SegueNames: String {
+    case GoToCurrencyChoice = "goToCurrencyChoice"
+    case GoToProductsChoice = "goToProductsChoice"
+    case GoToBasket = "goToBasket"
+}
+
+enum CellNames: String {
+    case ProductChoiceCell = "ProductChoiceCell"
+    case BasketCell = "BasketCell"
+}
+
 // Constants Definitions
 struct AppConstants {
     

@@ -9,11 +9,6 @@
 import Foundation
 import UIKit
 
-enum SegueNames: String {
-    case GoToCurrencyChoice = "goToCurrencyChoice"
-    case GoToProductsChoice = "goToProductsChoice"
-}
-
 class EntryViewController: UIViewController, CurrencyDelegate {
 
     fileprivate let defaults = UserDefaults(suiteName: AppConstants.USERDEFAULTS.USER_DEFAULT_SUITE_NAME)!
@@ -54,11 +49,12 @@ class EntryViewController: UIViewController, CurrencyDelegate {
             
             // inject initial data to productsChoice-VC's objects
             productsChoiceVC.products = [Product]()
-            productsChoiceVC.basket = Basket(itemsTypes: [ProductName](), productAmounts: [ProductName:Int](), basketCurrency: self.currencyChoice)
             productsChoiceVC.products?.append(PeasProduct())
             productsChoiceVC.products?.append(EggsProduct())
             productsChoiceVC.products?.append(MilkProduct())
             productsChoiceVC.products?.append(BeansProduct())
+            // if you want to start with virgin-basket or not, uncomment or comment the following line of code....
+            productsChoiceVC.basket = Basket(itemsTypes: [ProductName](), productAmounts: [ProductName:Int](), basketCurrency: self.currencyChoice)
         default:
             break
         }
@@ -66,7 +62,7 @@ class EntryViewController: UIViewController, CurrencyDelegate {
     
     // MARK: Target-Actions
     @IBAction func currencyChoiceButtonPressed(_ sender: Any) {
-        self.performSegue(withIdentifier: "goToCurrencyChoice", sender: nil)
+        self.performSegue(withIdentifier: SegueNames.GoToCurrencyChoice.rawValue, sender: nil)
     }
     
     @IBAction func startButtonPressed(_ sender: Any) {
