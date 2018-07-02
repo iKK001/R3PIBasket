@@ -36,7 +36,7 @@ struct PeasProduct: Product {
 
 struct EggsProduct: Product {
     var productName: String = "Eggs"
-    var productImage: UIImage = #imageLiteral(resourceName: "Milk")
+    var productImage: UIImage = #imageLiteral(resourceName: "Eggs")
     var productCurrency: Currency = .USD
     var productPrice: Float = 2.10
     var unitDescriptionLabel: ProductUnitDescription = .perDozen

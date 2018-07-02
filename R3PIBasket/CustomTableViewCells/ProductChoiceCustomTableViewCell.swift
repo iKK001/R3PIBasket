@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-class ProductChoiceCustomTableViewCell: UITableViewCell {
+class ProductChoiceCustomTableViewCell: UITableViewCell, UITextFieldDelegate {
 
     @IBOutlet weak var productName: UILabel!
     @IBOutlet weak var productImage: UIImageView!
@@ -18,23 +18,46 @@ class ProductChoiceCustomTableViewCell: UITableViewCell {
     @IBOutlet weak var unitDescriptionLabel: UILabel!
     @IBOutlet weak var nrOfProductsTextField: UITextField!
     
-    var deleteBtnCompletion : (() -> Void)? = nil
     var addToBasketBtnCompletion : ((Int?) -> Void)? = nil
     
-    func configureCell(tag: Int, product: Product) {
+    var product: Product! {
+        didSet {
+            self.productName.text = product.productName
+            self.productImage.image = product.productImage
+            self.productCurrency.text = product.productCurrency.rawValue
+            self.productPrice.text = String(format: "%.2f", product.productPrice)
+            self.unitDescriptionLabel.text = product.unitDescriptionLabel.rawValue
+        }
+    }
+    
+    func configureCell(tag: Int) {
         self.tag = tag
-        self.productName.text = product.productName
-        self.productImage.image = product.productImage
-        self.productCurrency.text = product.productCurrency.rawValue
-        self.productPrice.text = "\(product.productPrice)"
-        self.unitDescriptionLabel.text = product.unitDescriptionLabel.rawValue
+        
+        self.nrOfProductsTextField.keyboardType = .numbersAndPunctuation
+        self.nrOfProductsTextField.delegate = self
+    }
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        
+        // limit to Integers only
+        let text = (textField.text as NSString?)?.replacingCharacters(in: range, with: string)
+        if text == "" {
+            return true
+        } else if let txt = text,
+            let _ = Int(txt) {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
     }
     
     @IBAction func deleteBtnPressed(_ sender: Any) {
-        // execute the deletion-completion closure
-        if let deleteBtnAction = self.deleteBtnCompletion {
-            deleteBtnAction()
-        }
+        self.nrOfProductsTextField.text = "\(0)"
     }
     
     @IBAction func addToBasketBtnPressed(_ sender: Any) {

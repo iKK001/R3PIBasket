@@ -9,6 +9,11 @@
 import Foundation
 import UIKit
 
+enum SegueNames: String {
+    case GoToCurrencyChoice = "goToCurrencyChoice"
+    case GoToProductsChoice = "goToProductsChoice"
+}
+
 class EntryViewController: UIViewController, CurrencyDelegate {
 
     fileprivate let defaults = UserDefaults(suiteName: "ch.ideenkaffee.UserDefaults")!
@@ -66,12 +71,19 @@ class EntryViewController: UIViewController, CurrencyDelegate {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
         switch segue.identifier! {
-        case "goToCurrencyChoice":
+        case SegueNames.GoToCurrencyChoice.rawValue:
             let currencySearchVC = segue.destination as! CurrenyChoiceTableViewController
-            
             currencySearchVC.delegate = self
             currencySearchVC.currentTag = 0
             currencySearchVC.title = "Currency Choice"
+        case SegueNames.GoToProductsChoice.rawValue:
+            let productsChoiceVC = segue.destination as! ProductChoiceViewController
+            // fill 4 products
+            productsChoiceVC.products = [Product]()
+            productsChoiceVC.products?.append(PeasProduct())
+            productsChoiceVC.products?.append(EggsProduct())
+            productsChoiceVC.products?.append(MilkProduct())
+            productsChoiceVC.products?.append(BeansProduct())
         default:
             break
         }
