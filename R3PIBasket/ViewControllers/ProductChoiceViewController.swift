@@ -19,7 +19,15 @@ class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableVi
     
     @IBOutlet weak var productTableView: UITableView!
     @IBOutlet weak var currencyChoiceBtnOutlet: UIButton!
+    @IBOutlet weak var nrOfItemsLblOutlet: UILabel!
     
+    var nrOfItems: Int? {
+        get { return self.defaults.object(forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_NR_OF_ITMEMS_IN_BASKET) as? Int ?? 0 }
+        set {
+            self.defaults.set(newValue, forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_NR_OF_ITMEMS_IN_BASKET)
+            self.defaults.synchronize()
+        }
+    }
     var currencyChoice: Currency {
         get { return Currency(rawValue: self.defaults.object(forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_CURRENCY_CHOICE) as? String ?? "USD")! }
         set {
@@ -29,6 +37,7 @@ class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableVi
     }
     var products: [Product]?
     private var conversionFactor: Float?
+    var basket: Basket?
     
     override func viewDidLoad() {
         
@@ -41,6 +50,7 @@ class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableVi
         self.view.addGestureRecognizer(tap)
         
         // set properties
+        self.nrOfItemsLblOutlet.text = "\(self.basket?.itemsTypes?.count ?? 0)"
         self.currencyChoiceBtnOutlet.setTitle(self.currencyChoice.rawValue + " >", for: .normal)
         
         self.setCurrencyForAllProducts()
@@ -90,8 +100,11 @@ class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableVi
         productCell.product = self.products![indexPath.row]
         // 2nd: calculateConversion (order matters!)
         productCell.calculateConversion(conversionFactor: self.conversionFactor)
-        productCell.addToBasketBtnCompletion = { res in
-            self.setNewAmountForProduct(tag: productCell.tag, amount: Int(productCell.nrOfProductsTextField.text ?? ""))
+        
+        // completion-handler when AddBasket-Button of a cell is pressed
+        productCell.addToBasketBtnCompletion = { tag in
+            self.setNewAmountForProduct(tag: tag, amount: Int(productCell.nrOfProductsTextField.text ?? "") ?? 0)
+            self.updateNrOfItemsInBasket(tag: tag)
         }
 
         return productCell
@@ -110,8 +123,21 @@ class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableVi
         }
     }
     
-    func setNewAmountForProduct(tag: Int, amount: Int?) {
-        self.products?[tag].nrOfProducts = amount ?? 0
+    func setNewAmountForProduct(tag: Int, amount: Int) {
+        self.products?[tag].nrOfProducts = amount
+    }
+    
+    func updateNrOfItemsInBasket(tag: Int) {
+        
+        // if basket does not contain product-Item, add it
+        if let items = self.basket?.itemsTypes,
+            let name = self.products?[tag].productName {
+            if !items.contains(name) {
+                self.basket?.itemsTypes?.append(name)
+            }
+        }
+        self.nrOfItems = self.basket?.itemsTypes?.count
+        self.nrOfItemsLblOutlet.text = "\(self.nrOfItems ?? 0)"
     }
     
     // MARK: Network-calls
@@ -161,6 +187,9 @@ class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableVi
     
     @IBAction func currencyChoiceBtnPressed(_ sender: Any) {
         self.performSegue(withIdentifier: "goToCurrencyChoice", sender: nil)
+    }
+    
+    @IBAction func goToBasketBtnPressed(_ sender: Any) {
     }
     
     // MARK: Delegate callbacks

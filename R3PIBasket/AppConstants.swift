@@ -47,5 +47,6 @@ struct AppConstants {
     struct USERDEFAULTS {
         static let USER_DEFAULT_SUITE_NAME = "ch.ideenkaffee.UserDefaults"
         static let USER_DEFAULT_CURRENCY_CHOICE = "CurrencyChoice"
+        static let USER_DEFAULT_NR_OF_ITMEMS_IN_BASKET = "NrOfItemsInBasket"
     }
 }

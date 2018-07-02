@@ -18,11 +18,11 @@ class ProductChoiceCustomTableViewCell: UITableViewCell, UITextFieldDelegate {
     @IBOutlet weak var unitDescriptionLabel: UILabel!
     @IBOutlet weak var nrOfProductsTextField: UITextField!
     
-    var addToBasketBtnCompletion : ((Int?) -> Void)? = nil
+    var addToBasketBtnCompletion : ((Int) -> Void)? = nil
     
     var product: Product! {
         didSet {
-            self.productName.text = self.product.productName
+            self.productName.text = self.product.productName.rawValue
             self.productImage.image = self.product.productImage
             self.productCurrency.text = self.product.productCurrency.rawValue
             self.productPrice.text = String(format: "%.2f", self.product.productPrice)
@@ -70,9 +70,10 @@ class ProductChoiceCustomTableViewCell: UITableViewCell, UITextFieldDelegate {
     }
     
     @IBAction func addToBasketBtnPressed(_ sender: Any) {
+        
         // execute the addToBasket-completion closure
         if let addToBasketBtnAction = self.addToBasketBtnCompletion {
-            addToBasketBtnAction(Int(self.nrOfProductsTextField.text ?? "0"))
+            addToBasketBtnAction(self.tag)
         }
     }
 }

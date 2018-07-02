@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8F0861ED20EA4C1100199314 /* BasketModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F0861EC20EA4C1100199314 /* BasketModel.swift */; };
 		8F5256C120E61A3F008CC8E8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F5256C020E61A3F008CC8E8 /* AppDelegate.swift */; };
 		8F5256C320E61A3F008CC8E8 /* EntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F5256C220E61A3F008CC8E8 /* EntryViewController.swift */; };
 		8F5256C620E61A3F008CC8E8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8F5256C420E61A3F008CC8E8 /* Main.storyboard */; };
@@ -30,7 +31,7 @@
 		8F536FE420E6443C00321A8D /* UIButton_iKK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F536FE320E6443C00321A8D /* UIButton_iKK.swift */; };
 		8FF9C08C20E9650F003A140C /* ProductChoiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FF9C08B20E9650F003A140C /* ProductChoiceViewController.swift */; };
 		8FF9C08E20E965DB003A140C /* ProductChoiceCustomTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FF9C08D20E965DB003A140C /* ProductChoiceCustomTableViewCell.swift */; };
-		8FF9C09020E96B9C003A140C /* ProductsChoiceModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FF9C08F20E96B9C003A140C /* ProductsChoiceModel.swift */; };
+		8FF9C09020E96B9C003A140C /* ProductsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FF9C08F20E96B9C003A140C /* ProductsModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +52,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		8F0861EC20EA4C1100199314 /* BasketModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasketModel.swift; sourceTree = "<group>"; };
 		8F5256BD20E61A3F008CC8E8 /* R3PIBasket.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = R3PIBasket.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8F5256C020E61A3F008CC8E8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		8F5256C220E61A3F008CC8E8 /* EntryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryViewController.swift; sourceTree = "<group>"; };
@@ -80,7 +82,7 @@
 		8F536FE320E6443C00321A8D /* UIButton_iKK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIButton_iKK.swift; sourceTree = "<group>"; };
 		8FF9C08B20E9650F003A140C /* ProductChoiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductChoiceViewController.swift; sourceTree = "<group>"; };
 		8FF9C08D20E965DB003A140C /* ProductChoiceCustomTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductChoiceCustomTableViewCell.swift; sourceTree = "<group>"; };
-		8FF9C08F20E96B9C003A140C /* ProductsChoiceModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductsChoiceModel.swift; sourceTree = "<group>"; };
+		8FF9C08F20E96B9C003A140C /* ProductsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductsModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -267,7 +269,8 @@
 		8FF9C09120E96BB7003A140C /* ProductsModel */ = {
 			isa = PBXGroup;
 			children = (
-				8FF9C08F20E96B9C003A140C /* ProductsChoiceModel.swift */,
+				8F0861EC20EA4C1100199314 /* BasketModel.swift */,
+				8FF9C08F20E96B9C003A140C /* ProductsModel.swift */,
 			);
 			path = ProductsModel;
 			sourceTree = "<group>";
@@ -410,8 +413,9 @@
 				8F52570920E62708008CC8E8 /* iKKErrors.swift in Sources */,
 				8FF9C08E20E965DB003A140C /* ProductChoiceCustomTableViewCell.swift in Sources */,
 				8F536FE420E6443C00321A8D /* UIButton_iKK.swift in Sources */,
+				8F0861ED20EA4C1100199314 /* BasketModel.swift in Sources */,
 				8F5256C320E61A3F008CC8E8 /* EntryViewController.swift in Sources */,
-				8FF9C09020E96B9C003A140C /* ProductsChoiceModel.swift in Sources */,
+				8FF9C09020E96B9C003A140C /* ProductsModel.swift in Sources */,
 				8F5256F720E61BB8008CC8E8 /* iKKExtensions.swift in Sources */,
 				8F5256F320E61B29008CC8E8 /* AppConstants.swift in Sources */,
 				8F52570B20E63660008CC8E8 /* CurrenyChoiceTableViewController.swift in Sources */,
