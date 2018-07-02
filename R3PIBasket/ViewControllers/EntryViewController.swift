@@ -41,12 +41,12 @@ class EntryViewController: UIViewController, CurrencyDelegate {
         switch segue.identifier! {
         case SegueNames.GoToCurrencyChoice.rawValue:
             let currencySearchVC = segue.destination as! CurrenyChoiceTableViewController
+            currencySearchVC.title = "Currency Choice"
             currencySearchVC.delegate = self
             currencySearchVC.currentTag = 0
-            currencySearchVC.title = "Currency Choice"
         case SegueNames.GoToProductsChoice.rawValue:
             let productsChoiceVC = segue.destination as! ProductChoiceViewController
-            
+            productsChoiceVC.title = "Product Choice"
             // inject initial data to productsChoice-VC's objects
             productsChoiceVC.products = [Product]()
             productsChoiceVC.products?.append(PeasProduct())

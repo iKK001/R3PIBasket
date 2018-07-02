@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableViewDelegate, UITableViewDataSource {
+class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableViewDelegate, UITableViewDataSource, ProductsDelegate {
     
     fileprivate let defaults = UserDefaults(suiteName: AppConstants.USERDEFAULTS.USER_DEFAULT_SUITE_NAME)!
     
@@ -93,9 +93,23 @@ class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableVi
         switch segue.identifier! {
         case SegueNames.GoToCurrencyChoice.rawValue:
             let currencySearchVC = segue.destination as! CurrenyChoiceTableViewController
+            currencySearchVC.title = "Currency Choice"
             currencySearchVC.delegate = self
             currencySearchVC.currentTag = 0
-            currencySearchVC.title = "Currency Choice"
+        case SegueNames.GoToBasket.rawValue:
+            let basketVC = segue.destination as! BasketViewController
+            basketVC.title = "Basket"
+            basketVC.delegate = self
+            basketVC.basket = self.basket
+            basketVC.conversionFactor = self.conversionFactor
+            basketVC.products = [Product]()
+            if let itemTypes = self.basket?.itemsTypes {
+                for item in itemTypes {
+                    if let anyProduct = GenericProduct.createProduct(productName: item) {
+                        basketVC.products?.append(anyProduct)
+                    }
+                }
+            }
         default:
             break
         }
@@ -138,14 +152,12 @@ class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableVi
     }
     
     // MARK: Helper functions
+
     func setCurrencyForAllProducts() {
         // set currency for all products
-        // TODO: Make [Products]() confrom to Sequence-Type to make this easier
         if let products = self.products {
-            var i = 0
-            for _ in products {
-                self.products?[i].productCurrency = self.basket?.basketCurrency ?? .USD
-                i = i + 1
+            for (idx, _) in products.enumerated() {
+                self.products?[idx].productCurrency = self.basket?.basketCurrency ?? .USD
             }
         }
     }
@@ -225,10 +237,6 @@ class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableVi
         self.performSegue(withIdentifier: SegueNames.GoToCurrencyChoice.rawValue, sender: nil)
     }
     
-    @IBAction func goToBasketBtnPressed(_ sender: Any) {
-        self.performSegue(withIdentifier: SegueNames.GoToBasket.rawValue, sender: nil)
-    }
-    
     // MARK: Delegate callbacks
     
     func setBackDataNow(currency: Currency) {
@@ -236,5 +244,19 @@ class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableVi
         self.currencyChoiceBtnOutlet.setTitle(currency.rawValue + " >", for: .normal)
         self.setCurrencyForAllProducts()
         self.getNewestConversionFactor()
+    }
+    
+    func signalProductUpdate() {
+        
+        if let existingProducts = self.products,
+           let basket = self.basket {
+            for (idx, existingProd) in existingProducts.enumerated() {
+                let prod = existingProd.productName
+                if let amount = basket.productAmounts?[prod] {
+                    self.products![idx].nrOfProducts = amount
+                }
+            }
+        }
+        self.productTableView.reloadData()
     }
 }

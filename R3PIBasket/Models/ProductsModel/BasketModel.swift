@@ -30,4 +30,19 @@ struct Basket: BasketItem {
     var itemsTypes: [ProductName]?
     var productAmounts: [ProductName: Int]?
     var basketCurrency: Currency
+    
+    mutating func removeItem(withName: ProductName) {
+        var indexToRemove: Int = -1
+        if let itemTs = self.itemsTypes {
+            for (idx, name) in itemTs.enumerated() {
+                if name == withName {
+                    indexToRemove = idx
+                    break
+                }
+            }
+        }
+        if indexToRemove != -1 {
+            self.itemsTypes?.remove(at: indexToRemove)
+        }
+    }
 }

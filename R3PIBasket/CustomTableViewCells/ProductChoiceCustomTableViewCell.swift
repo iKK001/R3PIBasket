@@ -27,6 +27,7 @@ class ProductChoiceCustomTableViewCell: UITableViewCell, UITextFieldDelegate {
             self.productCurrency.text = self.product.productCurrency.rawValue
             self.productPrice.text = String(format: "%.2f", self.product.productPrice)
             self.unitDescriptionLabel.text = self.product.unitDescriptionLabel.rawValue
+            self.nrOfProductsTextField.text = "\(self.product.nrOfProducts)"
         }
     }
     

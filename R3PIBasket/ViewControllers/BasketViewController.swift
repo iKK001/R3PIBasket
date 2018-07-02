@@ -9,14 +9,22 @@
 import Foundation
 import UIKit
 
+protocol ProductsDelegate: class {
+    func signalProductUpdate()
+}
+
 class BasketViewController: UIViewController, CurrencyDelegate, UITableViewDelegate, UITableViewDataSource {
     
     fileprivate let defaults = UserDefaults(suiteName: AppConstants.USERDEFAULTS.USER_DEFAULT_SUITE_NAME)!
     
+    weak var delegate: ProductsDelegate?
+    
     @IBOutlet weak var basketTableView: UITableView!
     @IBOutlet weak var currencyChoiceBtnOutlet: UIButton!
     
-    private var conversionFactor: Float?
+    var conversionFactor: Float?
+    
+    var products: [Product]?
     
     // persistency of Basket
     // if more time - this would perferably be done by CoreData or Realm
@@ -75,6 +83,7 @@ class BasketViewController: UIViewController, CurrencyDelegate, UITableViewDeleg
         // set properties
         self.currencyChoiceBtnOutlet.setTitle(self.basket?.basketCurrency.rawValue ?? "USD" + " >", for: .normal)
         
+        self.setCurrencyForAllProducts()
     }
     
     @objc func hideKeyboardByTappingOutside() {
@@ -116,18 +125,56 @@ class BasketViewController: UIViewController, CurrencyDelegate, UITableViewDeleg
         basketCell.selectionStyle = .none
         basketCell.configureCell(tag: indexPath.row)
         
-        // 1st: assign the product
-        if let anyProduct = GenericProduct.createProduct(productName: self.basket?.itemsTypes?[indexPath.row]) {
-            basketCell.product = anyProduct
+        basketCell.updateBasketCompletion = { newAmount in
+            
+            self.basket?.productAmounts![ProductName(rawValue: self.products![indexPath.row].productName.rawValue)!] = newAmount
         }
+        
+        basketCell.removeFromBasketBtnCompletion = { product in
+            self.products?.remove(at: indexPath.row)
+            if let product = product {
+                self.basket?.removeItem(withName: product)
+            }
+            if self.products?.count ?? 0 >= indexPath.row + 1 {
+                if let _ = self.basket?.productAmounts,
+                    let pro = self.products?[indexPath.row],
+                    let productN = ProductName(rawValue: pro.productName.rawValue) {
+                    self.basket?.productAmounts![productN] = 0
+                }
+            }
 
-        // 2nd: calculateConversion (order matters!)
-        basketCell.calculateConversion(conversionFactor: self.conversionFactor)
-
+            self.basketTableView.reloadData()
+        }
+        
+        // 1st: create temporary-product
+        var tempProduct = self.products![indexPath.row]
+        // 2nd: add more product-properties from the basket
+        // (since only a generic product was instantiated and injected)
+        if let productName = self.basket?.itemsTypes?[indexPath.row],
+            let unitPrice = ProductUnitPriceInUSD.getUnitPriceInUSD(productName: productName) {
+            
+            let nrOfProducts = (self.basket?.productAmounts?[productName])!
+            tempProduct.productPrice = Float(nrOfProducts) * unitPrice
+            tempProduct.nrOfProducts = nrOfProducts
+            // 3rd: assign the product
+            basketCell.product = tempProduct
+            basketCell.nrOfProductsTextField.text = "\(nrOfProducts)"
+            //43rd: calculateConversion (order matters!)
+            basketCell.calculateConversion(conversionFactor: self.conversionFactor)
+        }
         return basketCell
     }
     
     // MARK: Helper functions
+    
+    func setCurrencyForAllProducts() {
+        // set currency for all products
+        if let products = self.products {
+            for (idx, _) in products.enumerated() {
+                self.products?[idx].productCurrency = self.basket?.basketCurrency ?? .USD
+            }
+        }
+    }
     
     // MARK: Network-calls
     
@@ -179,6 +226,8 @@ class BasketViewController: UIViewController, CurrencyDelegate, UITableViewDeleg
     }
     
     @IBAction func continueShoppingBtnPressed(_ sender: Any) {
+        
+        self.delegate?.signalProductUpdate()
         self.dismiss(animated: true, completion: nil)
     }
     
@@ -190,5 +239,7 @@ class BasketViewController: UIViewController, CurrencyDelegate, UITableViewDeleg
     func setBackDataNow(currency: Currency) {
         self.basket?.basketCurrency = currency
         self.currencyChoiceBtnOutlet.setTitle(currency.rawValue + " >", for: .normal)
+        self.setCurrencyForAllProducts()
+        self.getNewestConversionFactor()
     }
 }

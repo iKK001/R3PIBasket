@@ -18,15 +18,17 @@ class BasketCustomTableViewCell: UITableViewCell, UITextFieldDelegate {
     @IBOutlet weak var unitDescriptionLabel: UILabel!
     @IBOutlet weak var nrOfProductsTextField: UITextField!
     
-    var addToBasketBtnCompletion : ((Int) -> Void)? = nil
-    
+    var removeFromBasketBtnCompletion : ((ProductName?) -> Void)? = nil
+    var updateBasketCompletion : ((Int?) -> Void)? = nil
+
     var product: Product! {
         didSet {
             self.productName.text = self.product.productName.rawValue
             self.productImage.image = self.product.productImage
             self.productCurrency.text = self.product.productCurrency.rawValue
             self.productPrice.text = String(format: "%.2f", self.product.productPrice)
-            self.unitDescriptionLabel.text = self.product.unitDescriptionLabel.rawValue
+            self.unitDescriptionLabel.text = self.product.unitDescriptionLabel.description()
+            self.nrOfProductsTextField.text = "\(self.product.nrOfProducts)"
         }
     }
     
@@ -62,6 +64,10 @@ class BasketCustomTableViewCell: UITableViewCell, UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
+        // execute the removeFromBasketCompletion closure
+        if let updateBasketAction = self.updateBasketCompletion {
+            updateBasketAction(Int(textField.text ?? ""))
+        }
         return true
     }
     
@@ -69,11 +75,11 @@ class BasketCustomTableViewCell: UITableViewCell, UITextFieldDelegate {
         self.nrOfProductsTextField.text = "\(0)"
     }
     
-    @IBAction func addToBasketBtnPressed(_ sender: Any) {
+    @IBAction func removeFromBasketBtnPressed(_ sender: Any) {
         
-        // execute the addToBasket-completion closure
-        if let addToBasketBtnAction = self.addToBasketBtnCompletion {
-            addToBasketBtnAction(self.tag)
+        // execute the removeFromBasketCompletion closure
+        if let removeFromBasketBtnAction = self.removeFromBasketBtnCompletion {
+            removeFromBasketBtnAction(ProductName(rawValue: self.productName.text ?? ""))
         }
     }
 }
