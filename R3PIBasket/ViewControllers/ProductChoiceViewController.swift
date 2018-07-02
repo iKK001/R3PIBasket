@@ -13,27 +13,56 @@ enum CellNames: String {
     case ProductChoiceCell = "ProductChoiceCell"
 }
 
-class ProductChoiceViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableViewDelegate, UITableViewDataSource {
+    
+    fileprivate let defaults = UserDefaults(suiteName: AppConstants.USERDEFAULTS.USER_DEFAULT_SUITE_NAME)!
     
     @IBOutlet weak var productTableView: UITableView!
+    @IBOutlet weak var currencyChoiceBtnOutlet: UIButton!
     
+    var currencyChoice: Currency {
+        get { return Currency(rawValue: self.defaults.object(forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_CURRENCY_CHOICE) as? String ?? "USD")! }
+        set {
+            self.defaults.set(newValue.rawValue, forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_CURRENCY_CHOICE)
+            self.defaults.synchronize()
+        }
+    }
     var products: [Product]?
+    private var conversionFactor: Float?
     
     override func viewDidLoad() {
         
+        // set delegates
         self.productTableView.delegate = self
         self.productTableView.dataSource = self
         
-        self.productTableView.estimatedRowHeight = 134
-    
         // allow user to tap next to keyboard and make it dissappear
         let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.hideKeyboardByTappingOutside))
-        
         self.view.addGestureRecognizer(tap)
+        
+        // set properties
+        self.currencyChoiceBtnOutlet.setTitle(self.currencyChoice.rawValue + " >", for: .normal)
+        
+        self.setCurrencyForAllProducts()
+        self.getNewetsConversionFactor()
     }
     
     @objc func hideKeyboardByTappingOutside() {
         self.view.endEditing(true)
+    }
+    
+    // MARK: Segue method
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        switch segue.identifier! {
+        case SegueNames.GoToCurrencyChoice.rawValue:
+            let currencySearchVC = segue.destination as! CurrenyChoiceTableViewController
+            currencySearchVC.delegate = self
+            currencySearchVC.currentTag = 0
+            currencySearchVC.title = "Currency Choice"
+        default:
+            break
+        }
     }
     
     // MARK: TableView Delegate methods
@@ -53,17 +82,93 @@ class ProductChoiceViewController: UIViewController, UITableViewDelegate, UITabl
             return defaultCell
         }
         
-        // configure cell
+        // define look and feel
         productCell.selectionStyle = .none
         productCell.configureCell(tag: indexPath.row)
         
-        productCell.addToBasketBtnCompletion = { res in
-            
-        }
-        
-        // finally assign the product
+        // 1st: assign the product
         productCell.product = self.products![indexPath.row]
-        
+        // 2nd: calculateConversion (order matters!)
+        productCell.calculateConversion(conversionFactor: self.conversionFactor)
+        productCell.addToBasketBtnCompletion = { res in
+            self.setNewAmountForProduct(tag: productCell.tag, amount: Int(productCell.nrOfProductsTextField.text ?? ""))
+        }
+
         return productCell
+    }
+    
+    // MARK: Helper functions
+    func setCurrencyForAllProducts() {
+        // set currency for all products
+        // TODO: Make [Products]() confrom to Sequence-Type to make this easier
+        if let products = self.products {
+            var i = 0
+            for _ in products {
+                self.products?[i].productCurrency = self.currencyChoice
+                i = i + 1
+            }
+        }
+    }
+    
+    func setNewAmountForProduct(tag: Int, amount: Int?) {
+        self.products?[tag].nrOfProducts = amount ?? 0
+    }
+    
+    // MARK: Network-calls
+    
+    func getNewetsConversionFactor() {
+        // make a network-call to get most up-to-date Currency conversion
+        // ..do this in the background not to bother the UI..
+        let workItem_BG_CurrencyFetch = DispatchWorkItem {
+            let currencyAPI = CurrencyPlayerAPI()
+            
+            let access_key = AppConstants.APIKeys.CURRENCY_PLAYER_API_KEY
+            let source = "USD"
+            let currencies = self.currencyChoice.rawValue
+            let format = "1"
+            
+            let inputTerms: [String:String] = [
+                CurrenyPlayerAPIAttributes.access_key.rawValue:access_key,
+                CurrenyPlayerAPIAttributes.source.rawValue:source,
+                CurrenyPlayerAPIAttributes.currencies.rawValue:currencies,
+                CurrenyPlayerAPIAttributes.format.rawValue:format
+            ]
+            currencyAPI.getCurrencyConversionResults(inputTerms: inputTerms) { (currencyResult, error) in
+                
+                // check for error
+                guard error == nil else {
+                    // inform user that the network-fetch was not successful
+                    let alertController = UIAlertController(title: "Currency Conversion Error!", message: "The Network-provider was not able to deliver the required Currency-Information.\r\n\r\nPlease try again later...", preferredStyle: UIAlertControllerStyle.alert)
+                    alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default,handler: nil))
+                    self.present(alertController, animated: true, completion: nil)
+                    return
+                }
+                // if successful:
+                // get currency-conversion-factor from API
+                // (there is only one non-nil quotes-entry since we only asked for one)
+                self.conversionFactor = currencyResult?.quotes?.getFirstNonNilValue()
+                // reload tableView with new conversion-factor
+                DispatchQueue.main.async {
+                    self.productTableView.reloadData()
+                }
+            }
+        }
+        // then call the new workItem to be carried out in a concurrent BG-thread
+        DispatchQueue.global(qos:.userInteractive).async(execute: workItem_BG_CurrencyFetch)
+    }
+    
+    // MARK: Target-Actions
+    
+    @IBAction func currencyChoiceBtnPressed(_ sender: Any) {
+        self.performSegue(withIdentifier: "goToCurrencyChoice", sender: nil)
+    }
+    
+    // MARK: Delegate callbacks
+    
+    func setBackDataNow(currency: Currency) {
+        self.currencyChoice = currency
+        self.currencyChoiceBtnOutlet.setTitle(currency.rawValue + " >", for: .normal)
+        self.setCurrencyForAllProducts()
+        self.getNewetsConversionFactor()
     }
 }

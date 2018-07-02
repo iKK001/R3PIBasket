@@ -16,7 +16,7 @@ enum SegueNames: String {
 
 class EntryViewController: UIViewController, CurrencyDelegate {
 
-    fileprivate let defaults = UserDefaults(suiteName: "ch.ideenkaffee.UserDefaults")!
+    fileprivate let defaults = UserDefaults(suiteName: AppConstants.USERDEFAULTS.USER_DEFAULT_SUITE_NAME)!
     
     @IBOutlet weak var startButtonOutlet: UIButton_iKK!
     @IBOutlet weak var currencyChoiceButtonOutlet: UIButton!
@@ -33,33 +33,6 @@ class EntryViewController: UIViewController, CurrencyDelegate {
         super.viewDidLoad()
         
         self.setLookAndFeel()
-        
-        let currencyAPI = CurrencyPlayerAPI()
-        
-        let access_key = AppConstants.APIKeys.CURRENCY_PLAYER_API_KEY
-        let source = "USD"
-        let currencies = "CHF,EUR"
-        let format = "1"
-        
-        let inputTerms: [String:String] = [
-            CurrenyPlayerAPIAttributes.access_key.rawValue:access_key,
-            CurrenyPlayerAPIAttributes.source.rawValue:source,
-            CurrenyPlayerAPIAttributes.currencies.rawValue:currencies,
-            CurrenyPlayerAPIAttributes.format.rawValue:format
-        ]
-        currencyAPI.getCurrencyConversionResults(inputTerms: inputTerms) { (currencyResult, error) in
-            
-            // check for error
-            guard error == nil else {
-                // inform user that the network-fetch was not successful
-                let alertController = UIAlertController(title: "Currency Conversion Error!", message: "The Network-provider was not able to deliver the required Currency-Information.\r\n\r\nPlease try again later...", preferredStyle: UIAlertControllerStyle.alert)
-                alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default,handler: nil))
-                self.present(alertController, animated: true, completion: nil)
-                return
-            }
-            // if successful
-            print(currencyResult)
-        }
     }
     
     func setLookAndFeel() {
@@ -79,6 +52,7 @@ class EntryViewController: UIViewController, CurrencyDelegate {
         case SegueNames.GoToProductsChoice.rawValue:
             let productsChoiceVC = segue.destination as! ProductChoiceViewController
             // fill 4 products
+            productsChoiceVC.currencyChoice = self.currencyChoice
             productsChoiceVC.products = [Product]()
             productsChoiceVC.products?.append(PeasProduct())
             productsChoiceVC.products?.append(EggsProduct())

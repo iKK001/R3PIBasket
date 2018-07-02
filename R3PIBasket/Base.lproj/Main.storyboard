@@ -344,7 +344,9 @@
                                     <color key="titleColor" red="0.0" green="0.33054409899999998" blue="0.016916573899999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </state>
                                 <connections>
+                                    <action selector="currencyChoiceBtnPressed:" destination="5bp-Oi-BFi" eventType="touchUpInside" id="ZY5-Ol-mq3"/>
                                     <action selector="currencyChoiceButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="lOK-2c-5xU"/>
+                                    <segue destination="T2h-kL-WBI" kind="show" identifier="goToCurrencyChoice" id="T7z-DM-yNm"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -373,12 +375,13 @@
                         <viewLayoutGuide key="safeArea" id="mYr-d6-HIM"/>
                     </view>
                     <connections>
+                        <outlet property="currencyChoiceBtnOutlet" destination="1sg-J0-6C5" id="TJX-Oj-fJQ"/>
                         <outlet property="productTableView" destination="UTw-Lu-W5R" id="som-9E-f8Z"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Xek-Hs-hI2" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="876.81159420289862" y="32.608695652173914"/>
+            <point key="canvasLocation" x="844" y="32"/>
         </scene>
         <!--Search TableViewController-->
         <scene sceneID="Xxj-dU-0a0">
@@ -392,7 +395,7 @@
                                 <rect key="frame" x="0.0" y="49" width="414" height="687"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="CurrencyCell" id="nrG-GJ-ric" customClass="CurrencyCustomTableViewCell" customModule="R3PIBasket" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="CurrencyCell" id="nrG-GJ-ric" customClass="CurrencyCustomTableViewCell" customModule="R3PIBasket" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="28" width="414" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="nrG-GJ-ric" id="bTK-B5-q3G">
@@ -454,7 +457,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JdS-r3-hyQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="878" y="-653"/>
+            <point key="canvasLocation" x="855" y="-824"/>
         </scene>
     </scenes>
     <resources>
@@ -462,4 +465,7 @@
         <image name="Milk" width="100" height="150"/>
         <image name="R3PI_logo" width="150" height="65"/>
     </resources>
+    <inferredMetricsTieBreakers>
+        <segue reference="T7z-DM-yNm"/>
+    </inferredMetricsTieBreakers>
 </document>

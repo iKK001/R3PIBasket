@@ -15,7 +15,7 @@ class CurrencyPlayerAPI {
         // fetch Connection from OpenData API (given inputTerms)
         let currencyFetcher = CurrencyPlayerFetcher()
         
-        currencyFetcher.fetchCurrency(inputTerms: inputTerms) { (myConnection, error) in
+        currencyFetcher.fetchCurrency(inputTerms: inputTerms) { (myCurrency, error) in
             
             // check for error
             guard error == nil else {
@@ -23,8 +23,8 @@ class CurrencyPlayerAPI {
                 return
             }
             
-            if let connection = myConnection {
-                completionHandler?(connection, nil)
+            if let currency = myCurrency {
+                completionHandler?(currency, nil)
             } else {
                 let error = JSONFetchError.objectSerialization(reason: "no results from server")
                 completionHandler?(nil, error)

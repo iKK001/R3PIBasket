@@ -22,19 +22,28 @@ class ProductChoiceCustomTableViewCell: UITableViewCell, UITextFieldDelegate {
     
     var product: Product! {
         didSet {
-            self.productName.text = product.productName
-            self.productImage.image = product.productImage
-            self.productCurrency.text = product.productCurrency.rawValue
-            self.productPrice.text = String(format: "%.2f", product.productPrice)
-            self.unitDescriptionLabel.text = product.unitDescriptionLabel.rawValue
+            self.productName.text = self.product.productName
+            self.productImage.image = self.product.productImage
+            self.productCurrency.text = self.product.productCurrency.rawValue
+            self.productPrice.text = String(format: "%.2f", self.product.productPrice)
+            self.unitDescriptionLabel.text = self.product.unitDescriptionLabel.rawValue
         }
     }
     
     func configureCell(tag: Int) {
         self.tag = tag
-        
         self.nrOfProductsTextField.keyboardType = .numbersAndPunctuation
         self.nrOfProductsTextField.delegate = self
+    }
+    
+    func calculateConversion(conversionFactor: Float?) {
+        if let conversionF = conversionFactor {
+            let USDprice: Float = self.product.productPrice
+            let newPrice: Float = USDprice * conversionF
+            self.productPrice.text = String(format: "%.2f", newPrice)
+        } else {
+            self.productPrice.text = String(format: "%.2f", self.product.productPrice)
+        }
     }
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
