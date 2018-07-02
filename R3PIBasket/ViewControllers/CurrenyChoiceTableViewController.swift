@@ -8,54 +8,32 @@
 
 import UIKit
 
-enum SearchBackType {
-    case normalSearch
-    case addButtonSearch(Int)
-}
-
 protocol CurrencyDelegate: class {
     func setBackDataNow(currency: Currency)
 }
 
 class CurrenyChoiceTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate {
     
-    @IBOutlet weak var stationTableView: UITableView!
-
-    @IBOutlet weak var suggestionInfoView: UIView!
-    @IBOutlet weak var suggestionTitleLabel: UILabel!
-    @IBOutlet weak var suggestionExplanation1Label: UILabel!
+    @IBOutlet weak var tableView: UITableView!
     
     weak var delegate: CurrencyDelegate?
     
-    private var currencies: [String]? = [String]()
-    
-    var searchBar: UISearchBar?
-    var searchText: String?
+    private var currencies: [Currency]? = [Currency]()
+    private var searchBar: UISearchBar?
+    private var searchText: String?
     var currentTag: Int = 0
-    var didSelectCell: Bool = false
-    var backType: SearchBackType?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Do any additional setup after loading the view.
-        self.navigationController?.navigationBar.tintColor = .blue
-        
-        self.suggestionInfoView.isHidden = true
-        self.suggestionInfoView.backgroundColor = .yellow
-        self.suggestionTitleLabel.text = ""
-        self.suggestionTitleLabel.attributedText = iKKHelperClass.attributedText(withString: "No currency suggestions available !", boldString: "No currency suggestions available !", font: self.suggestionTitleLabel.font)
-        
-        self.currencies?.removeAll()
-        
         // define delegates
-        self.stationTableView.dataSource = self
-        self.stationTableView.delegate = self
+        self.tableView.dataSource = self
+        self.tableView.delegate = self
 
         // define look and feel of tableView
-        self.stationTableView.backgroundColor = iKKHelperClass.UIColorFromRGB(AppConstants.COLORS.COLOR_BACKGROUND)
-        self.stationTableView.separatorColor = .white
-        self.stationTableView.allowsSelection = true
+        self.tableView.backgroundColor = iKKHelperClass.UIColorFromRGB(AppConstants.COLORS.COLOR_BACKGROUND)
+        self.tableView.separatorColor = .white
+        self.tableView.allowsSelection = true
         
         // create searchBar
         if let searchT = self.searchText {
@@ -71,10 +49,6 @@ class CurrenyChoiceTableViewController: UIViewController, UITableViewDataSource,
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        self.navigationController?.navigationBar.tintColor = .blue
     }
     
     override var supportedInterfaceOrientations : UIInterfaceOrientationMask {
@@ -99,7 +73,7 @@ class CurrenyChoiceTableViewController: UIViewController, UITableViewDataSource,
         searchTextField?.layer.masksToBounds = true
         searchTextField?.clipsToBounds = true
         searchTextField?.font = UIFont.systemFont(ofSize: 20, weight: UIFont.Weight.regular)
-        self.stationTableView.tableHeaderView = searchBar
+        self.tableView.tableHeaderView = searchBar
         
         self.searchBar?.becomeFirstResponder()
         // fill all currencies at
@@ -113,6 +87,13 @@ class CurrenyChoiceTableViewController: UIViewController, UITableViewDataSource,
         self.fetchCurrencies()
     }
     
+    // MARK: SearchBar delegate methods
+    
+    func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
+        self.currencies?.removeAll()
+        self.fetchCurrencies()
+    }
+    
     func fetchCurrencies() {
         
         switch (self.searchBar!.selectedScopeButtonIndex) {
@@ -120,16 +101,16 @@ class CurrenyChoiceTableViewController: UIViewController, UITableViewDataSource,
             fallthrough // we only deal with one tab right now...
         default:
             // fill all currencies that fit the user-entry into memory
-            var allCurrenciesStrArray = [String]()
+            var allCurrenciesStrArray = [Currency]()
             for all in Currency.allValues {
                 if self.searchText != nil {
                     if all.rawValue.contains((self.searchText ?? "").uppercased()) {
-                        allCurrenciesStrArray.append(all.rawValue)
+                        allCurrenciesStrArray.append(all)
                     } else if self.searchText == "" {
-                        allCurrenciesStrArray.append(all.rawValue)
+                        allCurrenciesStrArray.append(all)
                     }
                 } else {
-                    allCurrenciesStrArray.append(all.rawValue)
+                    allCurrenciesStrArray.append(all)
                 }
             }
             self.currencies?.removeAll()
@@ -137,16 +118,9 @@ class CurrenyChoiceTableViewController: UIViewController, UITableViewDataSource,
             
             // relaod-TableView
             OperationQueue.main.addOperation {
-                self.stationTableView.reloadSections(IndexSet(integer: 0), with: .automatic)
+                self.tableView.reloadSections(IndexSet(integer: 0), with: .automatic)
             }
         }
-    }
-    
-    // MARK: SearchBar delegate methods
-    
-    func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
-        self.currencies?.removeAll()
-        self.fetchCurrencies()
     }
     
     // MARK: TableView delegate methods
@@ -161,7 +135,7 @@ class CurrenyChoiceTableViewController: UIViewController, UITableViewDataSource,
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     
-        let cell = self.stationTableView.dequeueReusableCell(withIdentifier: "CurrencyCell") as? CurrencyCustomTableViewCell
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: "CurrencyCell") as? CurrencyCustomTableViewCell
 
         // change look and feel....
         cell?.backgroundColor = .clear
@@ -176,10 +150,16 @@ class CurrenyChoiceTableViewController: UIViewController, UITableViewDataSource,
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        let cell = tableView.cellForRow(at: indexPath) as? CurrencyCustomTableViewCell
-        self.searchBar?.text = cell?.currencyItem
-        self.delegate?.setBackDataNow(currency: Currency(rawValue: (cell?.currencyItem)!)!)
-        self.didSelectCell = true
+        if let currencyChoice = currencies?[indexPath.row] {
+            self.searchBar?.text = currencyChoice.rawValue + "\t\t(" + currencyChoice.countryName + ")"
+            self.delegate?.setBackDataNow(currency: currencyChoice)
+        } else {
+            self.delegate?.setBackDataNow(currency: Currency.USD)
+        }
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    @IBAction func cancelBtnPressed(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)
     }
 }

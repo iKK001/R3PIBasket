@@ -12,9 +12,9 @@ class CurrencyCustomTableViewCell: UITableViewCell {
 
     @IBOutlet weak var currencyName: UILabel!
     
-    var currencyItem: String! {
+    var currencyItem: Currency! {
         didSet {
-            self.currencyName.text = currencyItem
+            self.currencyName.text = currencyItem.rawValue + "\t\t(" + currencyItem.countryName + ")"
         }
     }
     
