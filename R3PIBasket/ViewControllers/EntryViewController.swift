@@ -52,10 +52,9 @@ class EntryViewController: UIViewController, CurrencyDelegate {
         case SegueNames.GoToProductsChoice.rawValue:
             let productsChoiceVC = segue.destination as! ProductChoiceViewController
             
-            // inject initial data to productsChoice-VC's properties and objects
-            productsChoiceVC.currencyChoice = self.currencyChoice
+            // inject initial data to productsChoice-VC's objects
             productsChoiceVC.products = [Product]()
-            productsChoiceVC.basket = Basket(itemsTypes: [ProductNames](), basketCurrency: self.currencyChoice)
+            productsChoiceVC.basket = Basket(itemsTypes: [ProductName](), productAmounts: [ProductName:Int](), basketCurrency: self.currencyChoice)
             productsChoiceVC.products?.append(PeasProduct())
             productsChoiceVC.products?.append(EggsProduct())
             productsChoiceVC.products?.append(MilkProduct())

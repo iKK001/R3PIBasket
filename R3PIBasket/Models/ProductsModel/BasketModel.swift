@@ -9,13 +9,17 @@
 import Foundation
 
 protocol BasketItem {
-    var itemsTypes: [ProductNames]? { get set }
+    var itemsTypes: [ProductName]? { get set }
+    var productAmounts: [ProductName: Int]? { get set }
     var basketCurrency: Currency { get set }
 }
 
 extension BasketItem {
-    var itemsTypes: [ProductNames]? {
-        return [ProductNames]()
+    var itemsTypes: [ProductName]? {
+        return [ProductName]()
+    }
+    var productAmounts: [ProductName: Int]? {
+        return [ProductName:Int]()
     }
     var basketCurrency: Currency {
         return .USD
@@ -23,6 +27,7 @@ extension BasketItem {
 }
 
 struct Basket: BasketItem {
-    var itemsTypes: [ProductNames]?
+    var itemsTypes: [ProductName]?
+    var productAmounts: [ProductName: Int]?
     var basketCurrency: Currency
 }

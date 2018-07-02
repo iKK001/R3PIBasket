@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 
 protocol Product {
-    var productName: ProductNames { get set }
+    var productName: ProductName { get set }
     var productImage: UIImage { get set }
     var productCurrency: Currency { get set }
     var productPrice: Float { get set }
@@ -18,7 +18,7 @@ protocol Product {
     var nrOfProducts: Int { get set }
 }
 
-enum ProductNames: String, EnumCollection {
+enum ProductName: String, EnumCollection {
     case Peas = "Peas"
     case Eggs = "Eggs"
     case Milk = "Milk"
@@ -33,7 +33,7 @@ enum ProductUnitDescription: String {
 }
 
 struct PeasProduct: Product {
-    var productName: ProductNames = ProductNames.Peas
+    var productName: ProductName = ProductName.Peas
     var productImage: UIImage = #imageLiteral(resourceName: "Peas")
     var productCurrency: Currency = .USD
     var productPrice: Float = 0.95
@@ -42,7 +42,7 @@ struct PeasProduct: Product {
 }
 
 struct EggsProduct: Product {
-    var productName: ProductNames = ProductNames.Eggs
+    var productName: ProductName = ProductName.Eggs
     var productImage: UIImage = #imageLiteral(resourceName: "Eggs")
     var productCurrency: Currency = .USD
     var productPrice: Float = 2.10
@@ -51,7 +51,7 @@ struct EggsProduct: Product {
 }
 
 struct MilkProduct: Product {
-    var productName: ProductNames = ProductNames.Milk
+    var productName: ProductName = ProductName.Milk
     var productImage: UIImage = #imageLiteral(resourceName: "Milk")
     var productCurrency: Currency = .USD
     var productPrice: Float = 1.30
@@ -60,7 +60,7 @@ struct MilkProduct: Product {
 }
 
 struct BeansProduct: Product {
-    var productName: ProductNames = ProductNames.Beans
+    var productName: ProductName = ProductName.Beans
     var productImage: UIImage = #imageLiteral(resourceName: "Beans")
     var productCurrency: Currency = .USD
     var productPrice: Float = 0.73
