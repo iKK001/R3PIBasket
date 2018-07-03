@@ -21,11 +21,13 @@ enum SegueNames: String {
     case GoToCurrencyChoice = "goToCurrencyChoice"
     case GoToProductsChoice = "goToProductsChoice"
     case GoToBasket = "goToBasket"
+    case GoToSummary = "goToSummary"
 }
 
 enum CellNames: String {
     case ProductChoiceCell = "ProductChoiceCell"
     case BasketCell = "BasketCell"
+    case SummaryCell = "SummaryCell"
 }
 
 // Constants Definitions

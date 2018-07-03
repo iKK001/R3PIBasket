@@ -10,6 +10,8 @@
 		8F0861ED20EA4C1100199314 /* BasketModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F0861EC20EA4C1100199314 /* BasketModel.swift */; };
 		8F0861EF20EA7DB000199314 /* BasketViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F0861EE20EA7DB000199314 /* BasketViewController.swift */; };
 		8F0861F120EA874A00199314 /* BasketCustomTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F0861F020EA874A00199314 /* BasketCustomTableViewCell.swift */; };
+		8F4C114420EB9DB30093E00B /* SummaryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F4C114320EB9DB30093E00B /* SummaryViewController.swift */; };
+		8F4C114620EB9E990093E00B /* SummaryCustomTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F4C114520EB9E990093E00B /* SummaryCustomTableViewCell.swift */; };
 		8F5256C120E61A3F008CC8E8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F5256C020E61A3F008CC8E8 /* AppDelegate.swift */; };
 		8F5256C320E61A3F008CC8E8 /* EntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F5256C220E61A3F008CC8E8 /* EntryViewController.swift */; };
 		8F5256C620E61A3F008CC8E8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8F5256C420E61A3F008CC8E8 /* Main.storyboard */; };
@@ -57,6 +59,8 @@
 		8F0861EC20EA4C1100199314 /* BasketModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasketModel.swift; sourceTree = "<group>"; };
 		8F0861EE20EA7DB000199314 /* BasketViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BasketViewController.swift; sourceTree = "<group>"; };
 		8F0861F020EA874A00199314 /* BasketCustomTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BasketCustomTableViewCell.swift; sourceTree = "<group>"; };
+		8F4C114320EB9DB30093E00B /* SummaryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SummaryViewController.swift; sourceTree = "<group>"; };
+		8F4C114520EB9E990093E00B /* SummaryCustomTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SummaryCustomTableViewCell.swift; sourceTree = "<group>"; };
 		8F5256BD20E61A3F008CC8E8 /* R3PIBasket.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = R3PIBasket.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8F5256C020E61A3F008CC8E8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		8F5256C220E61A3F008CC8E8 /* EntryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryViewController.swift; sourceTree = "<group>"; };
@@ -203,6 +207,7 @@
 				8F5256C220E61A3F008CC8E8 /* EntryViewController.swift */,
 				8FF9C08B20E9650F003A140C /* ProductChoiceViewController.swift */,
 				8F0861EE20EA7DB000199314 /* BasketViewController.swift */,
+				8F4C114320EB9DB30093E00B /* SummaryViewController.swift */,
 				8F52570A20E63660008CC8E8 /* CurrenyChoiceTableViewController.swift */,
 			);
 			path = ViewControllers;
@@ -260,6 +265,7 @@
 				8F536FE020E6421300321A8D /* CurrencyCustomTableViewCell.swift */,
 				8FF9C08D20E965DB003A140C /* ProductChoiceCustomTableViewCell.swift */,
 				8F0861F020EA874A00199314 /* BasketCustomTableViewCell.swift */,
+				8F4C114520EB9E990093E00B /* SummaryCustomTableViewCell.swift */,
 			);
 			path = CustomTableViewCells;
 			sourceTree = "<group>";
@@ -426,12 +432,14 @@
 				8FF9C09020E96B9C003A140C /* ProductsModel.swift in Sources */,
 				8F5256F720E61BB8008CC8E8 /* iKKExtensions.swift in Sources */,
 				8F5256F320E61B29008CC8E8 /* AppConstants.swift in Sources */,
+				8F4C114620EB9E990093E00B /* SummaryCustomTableViewCell.swift in Sources */,
 				8F52570B20E63660008CC8E8 /* CurrenyChoiceTableViewController.swift in Sources */,
 				8F536FDC20E63B3700321A8D /* Currency.swift in Sources */,
 				8F5256F820E61BB8008CC8E8 /* iKKFunctions.swift in Sources */,
 				8F52570120E6212D008CC8E8 /* CurrencyModelResult.swift in Sources */,
 				8F536FE120E6421300321A8D /* CurrencyCustomTableViewCell.swift in Sources */,
 				8FF9C08C20E9650F003A140C /* ProductChoiceViewController.swift in Sources */,
+				8F4C114420EB9DB30093E00B /* SummaryViewController.swift in Sources */,
 				8F5256C120E61A3F008CC8E8 /* AppDelegate.swift in Sources */,
 				8F5256FB20E61D20008CC8E8 /* NetworkReachability.swift in Sources */,
 			);

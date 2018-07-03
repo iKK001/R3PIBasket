@@ -1,5 +1,5 @@
 //
-//  BasketViewController.swift
+//  SummaryViewController.swift
 //  R3PIBasket
 //
 //  Created by Stephan Korner on 01.07.18.
@@ -9,19 +9,15 @@
 import Foundation
 import UIKit
 
-protocol ProductsDelegate: class {
-    func signalProductUpdate()
-}
-
-class BasketViewController: UIViewController, CurrencyDelegate, UITableViewDelegate, UITableViewDataSource {
+class SummaryViewController: UIViewController, CurrencyDelegate, UITableViewDelegate, UITableViewDataSource {
     
     fileprivate let defaults = UserDefaults(suiteName: AppConstants.USERDEFAULTS.USER_DEFAULT_SUITE_NAME)!
+    fileprivate let cellHeight: CGFloat = 68.0
     
-    weak var delegate: ProductsDelegate?
-    
-    @IBOutlet weak var basketTableView: UITableView!
+    @IBOutlet weak var summaryTableView: UITableView!
     @IBOutlet weak var currencyChoiceBtnOutlet: UIButton!
-    
+    @IBOutlet weak var tableViewHeightConstraint: NSLayoutConstraint!
+
     var conversionFactor: Float?
     var basketProducts: [Product]?
     var basket: Basket?
@@ -29,21 +25,17 @@ class BasketViewController: UIViewController, CurrencyDelegate, UITableViewDeleg
     override func viewDidLoad() {
         
         // set delegates
-        self.basketTableView.delegate = self
-        self.basketTableView.dataSource = self
-        
-        // allow user to tap next to keyboard and make it dissappear
-        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.hideKeyboardByTappingOutside))
-        self.view.addGestureRecognizer(tap)
-        
-        // set properties
-        self.currencyChoiceBtnOutlet.setTitle(self.basket?.basketCurrency.rawValue ?? "USD" + " >", for: .normal)
+        self.summaryTableView.delegate = self
+        self.summaryTableView.dataSource = self
+        self.setLookAndFeel()
+    self.currencyChoiceBtnOutlet.setTitle(self.basket?.basketCurrency.rawValue ?? "USD" + " >", for: .normal)
         
         self.setCurrencyForAllProducts()
     }
     
-    @objc func hideKeyboardByTappingOutside() {
-        self.view.endEditing(true)
+    func setLookAndFeel() {
+        self.summaryTableView.isScrollEnabled = false
+        self.tableViewHeightConstraint.constant = CGFloat(self.basket?.itemsTypes?.count ?? 0) * cellHeight
     }
     
     // MARK: Segue method
@@ -55,29 +47,6 @@ class BasketViewController: UIViewController, CurrencyDelegate, UITableViewDeleg
             currencySearchVC.delegate = self
             currencySearchVC.currentTag = 0
             currencySearchVC.title = "Currency Choice"
-        case SegueNames.GoToSummary.rawValue:
-            let summaryVC = segue.destination as! SummaryViewController
-            summaryVC.title = "Purchase Summary"
-            summaryVC.basket = self.basket
-            summaryVC.conversionFactor = self.conversionFactor
-            summaryVC.basketProducts = [Product]()
-            // inject what you have from the basket into the new VC's products
-            if let itemTypes = self.basket?.itemsTypes {
-                for (idx, item) in itemTypes.enumerated() {
-                    if let anyProd = GenericProduct.createProduct(productName: item) {
-                        
-                        var anyProduct = anyProd
-                        summaryVC.basketProducts?.append(anyProduct)
-                        if let productName = self.basket?.itemsTypes?[idx],
-                            let unitPrice = ProductUnitPriceInUSD.getUnitPriceInUSD(productName: productName) {
-                            let nrOfProducts = (self.basket?.productAmounts?[productName])!
-                            anyProduct.productPrice = Float(nrOfProducts) * unitPrice
-                            anyProduct.nrOfProducts = nrOfProducts
-                            summaryVC.basketProducts?[idx] = anyProduct
-                        }
-                    }
-                }
-            }
         default:
             break
         }
@@ -86,7 +55,7 @@ class BasketViewController: UIViewController, CurrencyDelegate, UITableViewDeleg
     // MARK: TableView Delegate methods
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 134
+        return cellHeight
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -96,46 +65,23 @@ class BasketViewController: UIViewController, CurrencyDelegate, UITableViewDeleg
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let defaultCell = UITableViewCell(style: .default, reuseIdentifier: CellNames.BasketCell.rawValue)
-        guard let basketCell = tableView.dequeueReusableCell(withIdentifier: CellNames.BasketCell.rawValue, for: indexPath) as? BasketCustomTableViewCell else {
+        guard let summaryCell = tableView.dequeueReusableCell(withIdentifier: CellNames.SummaryCell.rawValue, for: indexPath) as? SummaryCustomTableViewCell else {
             return defaultCell
         }
         
         // define look and feel
-        basketCell.selectionStyle = .none
-        basketCell.configureCell(tag: indexPath.row)
-        
-        basketCell.updateBasketCompletion = { newAmount in
-            
-            self.basket?.productAmounts![ProductName(rawValue: self.basketProducts![indexPath.row].productName.rawValue)!] = newAmount
-        }
-        
-        basketCell.removeFromBasketBtnCompletion = { productN in
-            
-            self.basketProducts?.remove(at: indexPath.row)
-            if let productN = productN {
-                self.basket?.removeAmountItem(withName: productN)
-                self.basket?.removeBasketItem(withName: productN)
-            }
-            
-             if let _ = self.basket?.itemsTypes,
-                 let products = self.basketProducts,
-                 let amounts = self.basket?.productAmounts {
-                 print(products)
-                 print(amounts)
-             }
-
-            self.basketTableView.reloadData()
-        }
+        summaryCell.selectionStyle = .none
+        summaryCell.configureCell(tag: indexPath.row)
         
         // 1st: create temporary-product
         var tempProduct = self.basketProducts![indexPath.row]
         // 2nd: assign the product
-        basketCell.product = tempProduct
+        summaryCell.product = tempProduct
         let nrOfProducts = tempProduct.nrOfProducts
-        basketCell.nrOfProductsTextField.text = "\(nrOfProducts)"
+        summaryCell.nrOfProductsLabel.text = "\(nrOfProducts)"
         //43rd: calculateConversion (order matters!)
-        basketCell.calculateConversion(conversionFactor: self.conversionFactor)
-        return basketCell
+        summaryCell.calculateConversion(conversionFactor: self.conversionFactor)
+        return summaryCell
     }
     
     // MARK: Helper functions
@@ -184,7 +130,7 @@ class BasketViewController: UIViewController, CurrencyDelegate, UITableViewDeleg
                 self.conversionFactor = currencyResult?.quotes?.getFirstNonNilValue()
                 // reload tableView with new conversion-factor
                 DispatchQueue.main.async {
-                    self.basketTableView.reloadData()
+                    self.summaryTableView.reloadData()
                 }
             }
         }
@@ -198,16 +144,6 @@ class BasketViewController: UIViewController, CurrencyDelegate, UITableViewDeleg
         self.performSegue(withIdentifier: SegueNames.GoToCurrencyChoice.rawValue, sender: nil)
     }
     
-    @IBAction func continueShoppingBtnPressed(_ sender: Any) {
-        
-        self.delegate?.signalProductUpdate()
-        self.dismiss(animated: true, completion: nil)
-    }
-    
-    @IBAction func goToPaymentBtnPressed(_ sender: Any) {
-        self.performSegue(withIdentifier: SegueNames.GoToSummary.rawValue, sender: nil)
-    }
-    
     // MARK: Delegate callbacks
     
     func setBackDataNow(currency: Currency) {
@@ -216,4 +152,9 @@ class BasketViewController: UIViewController, CurrencyDelegate, UITableViewDeleg
         self.setCurrencyForAllProducts()
         self.getNewestConversionFactor()
     }
+    
+    @IBAction func backBtnPressed(_ sender: Any) {
+        self.dismiss(animated: true, completion: nil)
+    }
+    
 }

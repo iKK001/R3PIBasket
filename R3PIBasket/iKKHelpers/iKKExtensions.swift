@@ -9,6 +9,27 @@
 import Foundation
 import UIKit
 
+extension String {
+    
+    // Returns true if the string represents a proper numeric value.
+    // This method uses the device's current locale setting to determine
+    // which decimal separator it will accept.
+    func isNumeric() -> Bool
+    {
+        let scanner = Scanner(string: self)
+        
+        // A newly-created scanner has no locale by default.
+        // We'll set our scanner's locale to the user's locale
+        // so that it recognizes the decimal separator that
+        // the user expects (for example, in North America,
+        // "." is the decimal separator, while in many parts
+        // of Europe, "," is used).
+        scanner.locale = NSLocale.current
+        
+        return scanner.scanDecimal(nil) && scanner.isAtEnd
+    }
+}
+
 public enum Devices: String {
     case IPodTouch5
     case IPodTouch6
@@ -108,26 +129,5 @@ public extension UIDevice {
         case "i386", "x86_64":                          return Devices.Simulator
         default:                                        return Devices.Other
         }
-    }
-}
-
-extension String {
-    
-    // Returns true if the string represents a proper numeric value.
-    // This method uses the device's current locale setting to determine
-    // which decimal separator it will accept.
-    func isNumeric() -> Bool
-    {
-        let scanner = Scanner(string: self)
-        
-        // A newly-created scanner has no locale by default.
-        // We'll set our scanner's locale to the user's locale
-        // so that it recognizes the decimal separator that
-        // the user expects (for example, in North America,
-        // "." is the decimal separator, while in many parts
-        // of Europe, "," is used).
-        scanner.locale = NSLocale.current
-        
-        return scanner.scanDecimal(nil) && scanner.isAtEnd
     }
 }
