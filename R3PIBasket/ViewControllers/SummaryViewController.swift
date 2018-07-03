@@ -28,7 +28,7 @@ class SummaryViewController: UIViewController, CurrencyDelegate, UITableViewDele
         self.summaryTableView.delegate = self
         self.summaryTableView.dataSource = self
         self.setLookAndFeel()
-    self.currencyChoiceBtnOutlet.setTitle(self.basket?.basketCurrency.rawValue ?? "USD" + " >", for: .normal)
+    self.currencyChoiceBtnOutlet.setTitle((self.basket?.basketCurrency.rawValue ?? "USD") + " >", for: .normal)
         
         self.setCurrencyForAllProducts()
         self.summaryTableView.reloadData()

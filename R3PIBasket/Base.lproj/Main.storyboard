@@ -728,7 +728,6 @@
                                 <color key="backgroundColor" red="1" green="0.98387710399999995" blue="0.80909671039999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="ZeW-fN-L6d"/>
-                                    <constraint firstAttribute="width" constant="69" id="mFy-9o-y7a"/>
                                     <constraint firstAttribute="width" secondItem="QRh-pi-k4A" secondAttribute="height" multiplier="23:10" id="nOk-0a-HG2"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="18"/>
@@ -964,6 +963,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="cAi-dx-Fl9" firstAttribute="top" secondItem="cLL-DZ-gbo" secondAttribute="top" constant="10" id="00S-fw-A3e"/>
+                            <constraint firstAttribute="trailing" secondItem="PHu-32-5VN" secondAttribute="trailing" constant="30.5" id="1ES-ZE-jM3"/>
                             <constraint firstItem="dPE-0w-kDF" firstAttribute="top" secondItem="83Y-Ur-lwC" secondAttribute="bottom" constant="8" id="1bb-cw-UWP"/>
                             <constraint firstItem="hdy-WO-12h" firstAttribute="leading" secondItem="cLL-DZ-gbo" secondAttribute="leading" constant="254" id="22l-pB-N6E"/>
                             <constraint firstItem="j8u-O6-HYw" firstAttribute="leading" secondItem="cLL-DZ-gbo" secondAttribute="leading" constant="138" id="2YV-gU-vvf"/>
@@ -976,7 +976,7 @@
                             <constraint firstItem="1rh-h4-0LJ" firstAttribute="centerY" secondItem="j8u-O6-HYw" secondAttribute="centerY" id="CLj-Yr-1fA"/>
                             <constraint firstItem="B7u-Nz-lq9" firstAttribute="centerY" secondItem="j8u-O6-HYw" secondAttribute="centerY" constant="3" id="DhU-Ws-z6e"/>
                             <constraint firstItem="QRh-pi-k4A" firstAttribute="top" secondItem="PHu-32-5VN" secondAttribute="bottom" constant="2" id="H3L-bK-kxp"/>
-                            <constraint firstItem="QRh-pi-k4A" firstAttribute="leading" secondItem="PHu-32-5VN" secondAttribute="leading" id="IgX-Ts-21L"/>
+                            <constraint firstItem="QRh-pi-k4A" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="PHu-32-5VN" secondAttribute="leading" id="IgX-Ts-21L"/>
                             <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="83Y-Ur-lwC" secondAttribute="trailing" constant="20" symbolic="YES" id="Ije-b0-GaS"/>
                             <constraint firstItem="RUR-rH-u5r" firstAttribute="centerY" secondItem="SN4-xx-FqZ" secondAttribute="centerY" id="JHu-2m-uAC"/>
                             <constraint firstItem="Vt2-uN-Hzc" firstAttribute="top" secondItem="cLL-DZ-gbo" secondAttribute="top" constant="80" id="JUk-yD-365"/>
@@ -989,12 +989,11 @@
                             <constraint firstItem="iRl-eb-AyP" firstAttribute="centerX" secondItem="cLL-DZ-gbo" secondAttribute="centerX" id="SK7-Lf-Tw9"/>
                             <constraint firstItem="dPE-0w-kDF" firstAttribute="trailing" secondItem="cLL-DZ-gbo" secondAttribute="trailing" id="UGM-5C-80L"/>
                             <constraint firstItem="B7u-Nz-lq9" firstAttribute="leading" secondItem="cLL-DZ-gbo" secondAttribute="leading" constant="181" id="UHJ-6T-M66"/>
-                            <constraint firstItem="cLL-DZ-gbo" firstAttribute="trailing" secondItem="QRh-pi-k4A" secondAttribute="trailing" constant="21" id="VPR-tD-rOH"/>
                             <constraint firstItem="cAi-dx-Fl9" firstAttribute="leading" secondItem="xeE-Tk-Gax" secondAttribute="leading" constant="16" id="VQM-o2-O3G"/>
                             <constraint firstItem="8VF-np-Gli" firstAttribute="centerY" secondItem="83Y-Ur-lwC" secondAttribute="centerY" id="Wyh-54-FCY"/>
                             <constraint firstItem="Vt2-uN-Hzc" firstAttribute="leading" secondItem="cLL-DZ-gbo" secondAttribute="leading" constant="16" id="ZgW-mQ-ApK"/>
+                            <constraint firstAttribute="trailing" secondItem="QRh-pi-k4A" secondAttribute="trailing" constant="21" id="b2h-Ix-eMn"/>
                             <constraint firstItem="j8u-O6-HYw" firstAttribute="centerY" secondItem="8VF-np-Gli" secondAttribute="centerY" id="c3T-rS-AoB"/>
-                            <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="PHu-32-5VN" secondAttribute="trailing" constant="20" symbolic="YES" id="cyk-ER-1JN"/>
                             <constraint firstItem="hGu-ol-c4W" firstAttribute="top" secondItem="dPE-0w-kDF" secondAttribute="bottom" constant="-1" id="eBg-aI-QQy"/>
                             <constraint firstItem="SN4-xx-FqZ" firstAttribute="centerY" secondItem="pun-Yq-dCN" secondAttribute="centerY" id="eJM-RN-der"/>
                             <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="j8u-O6-HYw" secondAttribute="trailing" constant="20" symbolic="YES" id="gyf-Iz-uoe"/>
@@ -1009,7 +1008,6 @@
                             <constraint firstItem="pun-Yq-dCN" firstAttribute="top" secondItem="hGu-ol-c4W" secondAttribute="bottom" constant="41" id="sHs-ll-mtW"/>
                             <constraint firstItem="cAi-dx-Fl9" firstAttribute="width" secondItem="cAi-dx-Fl9" secondAttribute="height" multiplier="23:10" constant="58.800000000000011" id="tbS-EL-1Sf"/>
                             <constraint firstItem="dPE-0w-kDF" firstAttribute="leading" secondItem="cLL-DZ-gbo" secondAttribute="leading" id="wKX-4o-rJI"/>
-                            <constraint firstItem="PHu-32-5VN" firstAttribute="leading" secondItem="cLL-DZ-gbo" secondAttribute="leading" constant="230" id="zrF-0J-vBf"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="cLL-DZ-gbo"/>
                     </view>
@@ -1030,6 +1028,6 @@
         <image name="R3PI_logo" width="150" height="65"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="T7z-DM-yNm"/>
+        <segue reference="mLd-aP-hFM"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -40,7 +40,7 @@ class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableVi
         
         // set properties
         self.nrOfItemsLblOutlet.text = "\(self.basket?.itemsTypes?.count ?? 0)"
-        self.currencyChoiceBtnOutlet.setTitle(self.basket?.basketCurrency.rawValue ?? "USD" + " >", for: .normal)
+        self.currencyChoiceBtnOutlet.setTitle((self.basket?.basketCurrency.rawValue ?? "USD") + " >", for: .normal)
         
         self.setCurrencyForAllProducts()
         self.getNewestConversionFactor()

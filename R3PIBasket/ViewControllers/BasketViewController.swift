@@ -37,7 +37,7 @@ class BasketViewController: UIViewController, CurrencyDelegate, UITableViewDeleg
         self.view.addGestureRecognizer(tap)
         
         // set properties
-        self.currencyChoiceBtnOutlet.setTitle(self.basket?.basketCurrency.rawValue ?? "USD" + " >", for: .normal)
+        self.currencyChoiceBtnOutlet.setTitle((self.basket?.basketCurrency.rawValue ?? "USD") + " >", for: .normal)
         
         self.setCurrencyForAllProducts()
     }
