@@ -34,6 +34,7 @@ class ProductChoiceCustomTableViewCell: UITableViewCell, UITextFieldDelegate {
     func configureCell(tag: Int) {
         self.tag = tag
         self.nrOfProductsTextField.keyboardType = .numbersAndPunctuation
+        self.nrOfProductsTextField.autocorrectionType = .no
         self.nrOfProductsTextField.delegate = self
     }
     

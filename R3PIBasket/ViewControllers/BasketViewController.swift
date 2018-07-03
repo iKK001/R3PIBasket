@@ -43,6 +43,32 @@ class BasketViewController: UIViewController, CurrencyDelegate, ProductsDelegate
         
         self.setCurrencyForAllProducts()
         self.setLookAndFeel()
+
+        // move view out of the way-observers when keyboard shows
+        NotificationCenter.default.addObserver(self, selector: #selector(ProductChoiceViewController.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(ProductChoiceViewController.keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+    }
+    
+    @objc func keyboardWillShow(_ notification:Notification) {
+        
+        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+            self.basketTableView.contentInset = UIEdgeInsetsMake(0, 0, keyboardSize.height + 25, 0)
+        }
+    }
+    
+    @objc func keyboardWillHide(_ notification:Notification)
+    {
+        if let _ = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+            self.basketTableView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0)
+        }
+    }
+    
+    deinit {
+        // If your app supports iOS 8 or earlier, you need to manually
+        // remove the observer from the center. In later versions
+        // this is done automatically.
+        NotificationCenter.default.removeObserver(self)
     }
     
     @objc func hideKeyboardByTappingOutside() {

@@ -36,6 +36,7 @@ class BasketCustomTableViewCell: UITableViewCell, UITextFieldDelegate {
     func configureCell(tag: Int) {
         self.tag = tag
         self.nrOfProductsTextField.keyboardType = .numbersAndPunctuation
+        self.nrOfProductsTextField.autocorrectionType = .no
         self.nrOfProductsTextField.delegate = self
     }
     
@@ -80,6 +81,9 @@ class BasketCustomTableViewCell: UITableViewCell, UITextFieldDelegate {
     
     @IBAction func deleteBtnPressed(_ sender: Any) {
         self.nrOfProductsTextField.text = "\(0)"
+        // update productPrice
+        self.product.nrOfProducts = 0
+        self.calculateConversion(conversionFactor: self.conversionFactor)
     }
     
     @IBAction func removeFromBasketBtnPressed(_ sender: Any) {
