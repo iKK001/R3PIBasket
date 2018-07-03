@@ -31,44 +31,7 @@ class BasketViewController: UIViewController, CurrencyDelegate, UITableViewDeleg
     //
     // Since User-Defaults can store Int's, String's or [String]'s
     // there is a composition of the Basket-object
-    var basket: Basket? {
-        get {
-            var itemsTypes: [ProductName]? = [ProductName]()
-            var productAmounts: [ProductName: Int] = [ProductName: Int]()
-            let currency: Currency = Currency(rawValue: self.defaults.object(forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_CURRENCY_CHOICE) as? String ?? "USD")!
-            let itemTypeStrArr = self.defaults.object(forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_BASKET_ITEM_TYPES) as? [String] ?? [""]
-            let productAmountIntArr = self.defaults.object(forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_BASKET_PRODUCT_AMOUNT) as? [Int] ?? [0]
-            itemsTypes?.removeAll()
-            productAmounts.removeAll()
-            var i = 0
-            for itemT in itemTypeStrArr  {
-                if let item = ProductName(rawValue: itemT) {
-                    itemsTypes?.append(item)
-                    productAmounts[item] = productAmountIntArr[i]
-                    i = i + 1
-                }
-            }
-            return Basket(itemsTypes: itemsTypes, productAmounts: productAmounts, basketCurrency: currency)
-        }
-        set {
-            var itemsTypeStrArr: [String] = [String]()
-            var productAmounts: [Int] = [Int]()
-            let currency: String = (newValue?.basketCurrency.rawValue)!
-            itemsTypeStrArr.removeAll()
-            productAmounts.removeAll()
-            if let items = newValue?.itemsTypes {
-                for item in items {
-                    itemsTypeStrArr.append(item.rawValue)
-                    productAmounts.append(newValue?.productAmounts![item] ?? 0)
-                }
-            }
-            self.defaults.set(itemsTypeStrArr, forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_BASKET_ITEM_TYPES)
-            self.defaults.set(productAmounts, forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_BASKET_PRODUCT_AMOUNT)
-            self.defaults.set(currency, forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_CURRENCY_CHOICE)
-
-            self.defaults.synchronize()
-        }
-    }
+    var basket: Basket?
     
     override func viewDidLoad() {
         

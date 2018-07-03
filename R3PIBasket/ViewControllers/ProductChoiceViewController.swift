@@ -26,44 +26,7 @@ class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableVi
     //
     // Since User-Defaults can store Int's, String's or [String]'s
     // there is a composition of the Basket-object
-    var basket: Basket? {
-        get {
-            var itemsTypes: [ProductName]? = [ProductName]()
-            var productAmounts: [ProductName: Int] = [ProductName: Int]()
-            let currency: Currency = Currency(rawValue: self.defaults.object(forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_CURRENCY_CHOICE) as? String ?? "USD")!
-            let itemTypeStrArr = self.defaults.object(forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_BASKET_ITEM_TYPES) as? [String] ?? [""]
-            let productAmountIntArr = self.defaults.object(forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_BASKET_PRODUCT_AMOUNT) as? [Int] ?? [0]
-            itemsTypes?.removeAll()
-            productAmounts.removeAll()
-            var i = 0
-            for itemT in itemTypeStrArr  {
-                if let item = ProductName(rawValue: itemT) {
-                    itemsTypes?.append(item)
-                    productAmounts[item] = productAmountIntArr[i]
-                    i = i + 1
-                }
-            }
-            return Basket(itemsTypes: itemsTypes, productAmounts: productAmounts, basketCurrency: currency)
-        }
-        set {
-            var itemsTypeStrArr: [String] = [String]()
-            var productAmounts: [Int] = [Int]()
-            let currency: String = (newValue?.basketCurrency.rawValue)!
-            itemsTypeStrArr.removeAll()
-            productAmounts.removeAll()
-            if let items = newValue?.itemsTypes {
-                for item in items {
-                    itemsTypeStrArr.append(item.rawValue)
-                    productAmounts.append(newValue?.productAmounts![item] ?? 0)
-                }
-            }
-            self.defaults.set(itemsTypeStrArr, forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_BASKET_ITEM_TYPES)
-            self.defaults.set(productAmounts, forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_BASKET_PRODUCT_AMOUNT)
-            self.defaults.set(currency, forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_CURRENCY_CHOICE)
-
-            self.defaults.synchronize()
-        }
-    }
+    var basket: Basket?
     
     override func viewDidLoad() {
         
@@ -143,9 +106,7 @@ class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableVi
         
         // completion-handler when AddBasket-Button of a cell is pressed
         productCell.addToBasketBtnCompletion = { tag in
-            self.setNewAmountForProduct(tag: tag, amount: Int(productCell.nrOfProductsTextField.text ?? "") ?? 0)
-            self.setNewAmountInBasket(productName: ProductName(rawValue: productCell.productName.text ?? ""), amount: Int(productCell.nrOfProductsTextField.text ?? "") ?? 0)
-            self.updateNrOfItemsInBasket(tag: tag)
+            self.updateNrOfItemsInBasket(tag: tag, productName: ProductName(rawValue: productCell.productName.text ?? "")!, amount: Int(productCell.nrOfProductsTextField.text ?? "") ?? 0)
         }
 
         return productCell
@@ -167,13 +128,12 @@ class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableVi
     }
     
     func setNewAmountInBasket(productName: ProductName?, amount: Int) {
-        if let _ = self.basket?.productAmounts,
-            let prodName = productName {
+        if let prodName = productName {
             self.basket?.productAmounts![prodName] = amount
         }
     }
     
-    func updateNrOfItemsInBasket(tag: Int) {
+    func updateNrOfItemsInBasket(tag: Int, productName: ProductName, amount: Int) {
         
         // if basket does not contain product-Item, add it
         if let items = self.basket?.itemsTypes,
@@ -186,6 +146,9 @@ class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableVi
         }
         self.nrOfItems = self.basket?.itemsTypes?.count
         self.nrOfItemsLblOutlet.text = "\(self.nrOfItems ?? 0)"
+        
+        self.setNewAmountForProduct(tag: tag, amount: amount)
+        self.setNewAmountInBasket(productName: productName, amount: amount)
     }
     
     // MARK: Network-calls
@@ -250,6 +213,12 @@ class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableVi
         
         if let existingProducts = self.products,
            let basket = self.basket {
+           // update currency
+        self.currencyChoiceBtnOutlet.setTitle(basket.basketCurrency.rawValue + " >", for: .normal)
+            self.setCurrencyForAllProducts()
+            self.getNewestConversionFactor()
+            
+            // update products
             for (idx, existingProd) in existingProducts.enumerated() {
                 let prod = existingProd.productName
                 if let amount = basket.productAmounts?[prod] {

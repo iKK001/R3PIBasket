@@ -53,8 +53,11 @@ class EntryViewController: UIViewController, CurrencyDelegate {
             productsChoiceVC.products?.append(EggsProduct())
             productsChoiceVC.products?.append(MilkProduct())
             productsChoiceVC.products?.append(BeansProduct())
-            // if you want to start with virgin-basket or not, uncomment or comment the following line of code....
-            productsChoiceVC.basket = Basket(itemsTypes: [ProductName](), productAmounts: [ProductName:Int](), basketCurrency: self.currencyChoice)
+            // start with virgin-basket
+            productsChoiceVC.basket = Basket()
+            productsChoiceVC.basket?.itemsTypes = [ProductName]()
+            productsChoiceVC.basket?.productAmounts = [ProductName:Int]()
+            productsChoiceVC.basket?.basketCurrency = self.currencyChoice
         default:
             break
         }
