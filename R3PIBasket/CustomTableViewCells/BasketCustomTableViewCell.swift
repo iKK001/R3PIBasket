@@ -19,6 +19,7 @@ class BasketCustomTableViewCell: UITableViewCell, UITextFieldDelegate {
     @IBOutlet weak var nrOfProductsTextField: UITextField!
     
     var removeFromBasketBtnCompletion : ((ProductName?) -> Void)? = nil
+    var deleteItemCompletion : ((Int?) -> Void)? = nil
     var updateBasketCompletion : ((Int?) -> Void)? = nil
     var conversionFactor: Float?
 
@@ -45,11 +46,17 @@ class BasketCustomTableViewCell: UITableViewCell, UITextFieldDelegate {
         
         if let conversionF = conversionFactor {
             let prodN = self.product.productName
-            let USDprice: Float = Float(self.product.nrOfProducts) * (ProductUnitPriceInUSD.getUnitPriceInUSD(productName: prodN) ?? 1.0)
+            let USDprice: Float = Float(self.product.nrOfProducts) * (ProductUnitPriceInUSD.getUnitPriceInUSD(productName: prodN) ?? 0.0)
             let newPrice: Float = USDprice * conversionF
             self.productPrice.text = String(format: "%.2f", newPrice)
         } else {
             self.productPrice.text = String(format: "%.2f", self.product.productPrice)
+        }
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        if textField.text == "0" {
+            textField.text = ""
         }
     }
     
@@ -70,7 +77,7 @@ class BasketCustomTableViewCell: UITableViewCell, UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         // update productPrice
-        self.product.nrOfProducts = Int(textField.text!) ?? 1
+        self.product.nrOfProducts = Int(textField.text!) ?? 0
         self.calculateConversion(conversionFactor: self.conversionFactor)
         // execute the removeFromBasketCompletion closure
         if let updateBasketAction = self.updateBasketCompletion {
@@ -84,6 +91,10 @@ class BasketCustomTableViewCell: UITableViewCell, UITextFieldDelegate {
         // update productPrice
         self.product.nrOfProducts = 0
         self.calculateConversion(conversionFactor: self.conversionFactor)
+        // execute the removeFromBasketCompletion closure
+        if let deleteItemAction = self.deleteItemCompletion {
+            deleteItemAction(Int(self.nrOfProductsTextField.text ?? ""))
+        }
     }
     
     @IBAction func removeFromBasketBtnPressed(_ sender: Any) {

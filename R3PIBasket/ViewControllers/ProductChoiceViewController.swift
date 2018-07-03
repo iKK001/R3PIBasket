@@ -145,6 +145,20 @@ class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableVi
         productCell.addToBasketBtnCompletion = { tag in
             self.updateAmountsAndNumberOfItems(tag: tag, productName: ProductName(rawValue: productCell.productName.text ?? "")!, amount: Int(productCell.nrOfProductsTextField.text ?? "") ?? 0)
         }
+        
+        productCell.deleteItemBtnCompletion = { tag in
+            // update products
+            self.products![indexPath.row].nrOfProducts = 0
+        }
+        
+        if let items = self.basket?.itemsTypes {
+            if items.contains(productCell.product.productName) {
+                productCell.greenIsInBasketView.isHidden = false
+            } else {
+                productCell.greenIsInBasketView.isHidden = true
+                productCell.nrOfProductsTextField.text = "0"
+            }
+        }
 
         return productCell
     }
@@ -273,12 +287,11 @@ class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableVi
         }
         // update currency
     self.currencyChoiceBtnOutlet.setTitle((self.basket?.basketCurrency.rawValue ?? "") + " >", for: .normal)
-        self.setCurrencyForAllProducts()
-        self.getNewestConversionFactor()
         // update Item counter in Basket
         self.nrOfItems = self.basket?.itemsTypes?.count
         self.nrOfItemsLblOutlet.text = "\(self.nrOfItems ?? 0)"
-        // update the productsTableView
-        self.productTableView.reloadData()
+        self.setCurrencyForAllProducts()
+        self.getNewestConversionFactor()
+
     }
 }

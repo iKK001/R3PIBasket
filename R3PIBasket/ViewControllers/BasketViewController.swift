@@ -78,20 +78,20 @@ class BasketViewController: UIViewController, CurrencyDelegate, ProductsDelegate
     func setLookAndFeel() {
         switch AppConstants.FEATUREFLAG.DEVICE_MODEL_NAME {
         case Devices.IPhone5, Devices.IPhone5S, Devices.IPhone5C:
-            self.goToPaymentBtnOutlet.setTitle("Payment >", for: .normal)
-            self.continueShoppingBtnOutlet.setTitle("< Continue", for: .normal)
+            self.goToPaymentBtnOutlet.setTitle("  Payment >", for: .normal)
+            self.continueShoppingBtnOutlet.setTitle("< Continue  ", for: .normal)
         case Devices.IPhone6, Devices.IPhone6S, Devices.IPhone7, Devices.IPhone8:
-            self.goToPaymentBtnOutlet.setTitle("Go to Payment >", for: .normal)
-            self.continueShoppingBtnOutlet.setTitle("< Continue Shopping", for: .normal)
+            self.goToPaymentBtnOutlet.setTitle("  Go to Payment >", for: .normal)
+            self.continueShoppingBtnOutlet.setTitle("< Continue Shopping  ", for: .normal)
         case Devices.IPhone6Plus, Devices.IPhone6SPlus, Devices.IPhone7Plus, Devices.IPhone8Plus:
-            self.goToPaymentBtnOutlet.setTitle("Go to Payment >", for: .normal)
-            self.continueShoppingBtnOutlet.setTitle("< Continue Shopping", for: .normal)
+            self.goToPaymentBtnOutlet.setTitle("  Go to Payment >", for: .normal)
+            self.continueShoppingBtnOutlet.setTitle("< Continue Shopping  ", for: .normal)
         case Devices.IPhoneX:
-            self.goToPaymentBtnOutlet.setTitle("Go to Payment >", for: .normal)
-            self.continueShoppingBtnOutlet.setTitle("< Continue Shopping", for: .normal)
+            self.goToPaymentBtnOutlet.setTitle("  Go to Payment >", for: .normal)
+            self.continueShoppingBtnOutlet.setTitle("< Continue Shopping  ", for: .normal)
         default:
-            self.goToPaymentBtnOutlet.setTitle("Go to Payment >", for: .normal)
-            self.continueShoppingBtnOutlet.setTitle("< Continue Shopping", for: .normal)
+            self.goToPaymentBtnOutlet.setTitle("  Go to Payment >", for: .normal)
+            self.continueShoppingBtnOutlet.setTitle("< Continue Shopping  ", for: .normal)
         }
     }
     
@@ -155,7 +155,10 @@ class BasketViewController: UIViewController, CurrencyDelegate, ProductsDelegate
         basketCell.configureCell(tag: indexPath.row)
         
         basketCell.updateBasketCompletion = { newAmount in
-            
+            self.basket?.productAmounts![ProductName(rawValue: self.basketProducts![indexPath.row].productName.rawValue)!] = newAmount
+        }
+        
+        basketCell.deleteItemCompletion = { newAmount in
             self.basket?.productAmounts![ProductName(rawValue: self.basketProducts![indexPath.row].productName.rawValue)!] = newAmount
         }
         
@@ -166,14 +169,6 @@ class BasketViewController: UIViewController, CurrencyDelegate, ProductsDelegate
                 self.basket?.removeAmountItem(withName: productN)
                 self.basket?.removeBasketItem(withName: productN)
             }
-            
-             if let _ = self.basket?.itemsTypes,
-                 let products = self.basketProducts,
-                 let amounts = self.basket?.productAmounts {
-                 print(products)
-                 print(amounts)
-             }
-
             self.basketTableView.reloadData()
         }
         

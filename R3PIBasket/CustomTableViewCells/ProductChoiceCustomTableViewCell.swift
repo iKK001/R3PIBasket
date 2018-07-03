@@ -17,8 +17,10 @@ class ProductChoiceCustomTableViewCell: UITableViewCell, UITextFieldDelegate {
     @IBOutlet weak var productPrice: UILabel!
     @IBOutlet weak var unitDescriptionLabel: UILabel!
     @IBOutlet weak var nrOfProductsTextField: UITextField!
+    @IBOutlet weak var greenIsInBasketView: UIView!
     
     var addToBasketBtnCompletion : ((Int) -> Void)? = nil
+    var deleteItemBtnCompletion : ((Int) -> Void)? = nil
     
     var product: Product! {
         didSet {
@@ -32,6 +34,7 @@ class ProductChoiceCustomTableViewCell: UITableViewCell, UITextFieldDelegate {
     }
     
     func configureCell(tag: Int) {
+        self.greenIsInBasketView.isHidden = true
         self.tag = tag
         self.nrOfProductsTextField.keyboardType = .numbersAndPunctuation
         self.nrOfProductsTextField.autocorrectionType = .no
@@ -45,6 +48,12 @@ class ProductChoiceCustomTableViewCell: UITableViewCell, UITextFieldDelegate {
             self.productPrice.text = String(format: "%.2f", newPrice)
         } else {
             self.productPrice.text = String(format: "%.2f", self.product.productPrice)
+        }
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        if textField.text == "0" {
+            textField.text = ""
         }
     }
     
@@ -69,10 +78,20 @@ class ProductChoiceCustomTableViewCell: UITableViewCell, UITextFieldDelegate {
     
     @IBAction func deleteBtnPressed(_ sender: Any) {
         self.nrOfProductsTextField.text = "\(0)"
+        self.greenIsInBasketView.isHidden = true
+        
+        // execute the addToBasket-completion closure
+        if let deleteItemAction = self.deleteItemBtnCompletion {
+            deleteItemAction(self.tag)
+        }
     }
     
     @IBAction func addToBasketBtnPressed(_ sender: Any) {
         
+        if let nrOfItems = Int(self.nrOfProductsTextField.text ?? "0") {
+            if nrOfItems > 0 { self.greenIsInBasketView.isHidden = false }
+        }
+
         // execute the addToBasket-completion closure
         if let addToBasketBtnAction = self.addToBasketBtnCompletion {
             addToBasketBtnAction(self.tag)
