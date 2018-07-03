@@ -24,7 +24,7 @@ class BasketViewController: UIViewController, CurrencyDelegate, UITableViewDeleg
     
     var conversionFactor: Float?
     
-    var products: [Product]?
+    var basketProducts: [Product]?
     
     // persistency of Basket
     // if more time - this would perferably be done by CoreData or Realm
@@ -90,17 +90,20 @@ class BasketViewController: UIViewController, CurrencyDelegate, UITableViewDeleg
         
         basketCell.updateBasketCompletion = { newAmount in
             
-            self.basket?.productAmounts![ProductName(rawValue: self.products![indexPath.row].productName.rawValue)!] = newAmount
+            self.basket?.productAmounts![ProductName(rawValue: self.basketProducts![indexPath.row].productName.rawValue)!] = newAmount
         }
         
         basketCell.removeFromBasketBtnCompletion = { product in
-            self.products?.remove(at: indexPath.row)
+            
+            
+            
+            self.basketProducts?.remove(at: indexPath.row)
             if let product = product {
                 self.basket?.removeItem(withName: product)
             }
-            if self.products?.count ?? 0 >= indexPath.row + 1 {
+            if self.basketProducts?.count ?? 0 >= indexPath.row + 1 {
                 if let _ = self.basket?.productAmounts,
-                    let pro = self.products?[indexPath.row],
+                    let pro = self.basketProducts?[indexPath.row],
                     let productN = ProductName(rawValue: pro.productName.rawValue) {
                     self.basket?.productAmounts![productN] = 0
                 }
@@ -110,21 +113,13 @@ class BasketViewController: UIViewController, CurrencyDelegate, UITableViewDeleg
         }
         
         // 1st: create temporary-product
-        var tempProduct = self.products![indexPath.row]
-        // 2nd: add more product-properties from the basket
-        // (since only a generic product was instantiated and injected)
-        if let productName = self.basket?.itemsTypes?[indexPath.row],
-            let unitPrice = ProductUnitPriceInUSD.getUnitPriceInUSD(productName: productName) {
-            
-            let nrOfProducts = (self.basket?.productAmounts?[productName])!
-            tempProduct.productPrice = Float(nrOfProducts) * unitPrice
-            tempProduct.nrOfProducts = nrOfProducts
-            // 3rd: assign the product
-            basketCell.product = tempProduct
-            basketCell.nrOfProductsTextField.text = "\(nrOfProducts)"
-            //43rd: calculateConversion (order matters!)
-            basketCell.calculateConversion(conversionFactor: self.conversionFactor)
-        }
+        var tempProduct = self.basketProducts![indexPath.row]
+        // 2nd: assign the product
+        basketCell.product = tempProduct
+        let nrOfProducts = tempProduct.nrOfProducts
+        basketCell.nrOfProductsTextField.text = "\(nrOfProducts)"
+        //43rd: calculateConversion (order matters!)
+        basketCell.calculateConversion(conversionFactor: self.conversionFactor)
         return basketCell
     }
     
@@ -132,9 +127,9 @@ class BasketViewController: UIViewController, CurrencyDelegate, UITableViewDeleg
     
     func setCurrencyForAllProducts() {
         // set currency for all products
-        if let products = self.products {
+        if let products = self.basketProducts {
             for (idx, _) in products.enumerated() {
-                self.products?[idx].productCurrency = self.basket?.basketCurrency ?? .USD
+                self.basketProducts?[idx].productCurrency = self.basket?.basketCurrency ?? .USD
             }
         }
     }
