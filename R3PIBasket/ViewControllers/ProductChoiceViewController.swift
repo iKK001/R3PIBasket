@@ -146,20 +146,22 @@ class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableVi
     
     func updateAmountsAndNumberOfItems(tag: Int, productName: ProductName, amount: Int) {
         
-        // if basket does not contain product-Item, add it
-        if let items = self.basket?.itemsTypes,
-            let name = self.products?[tag].productName {
-            if !items.contains(name) {
-                self.basket?.itemsTypes?.append(name)
-                let amount = self.products?[tag].nrOfProducts
-                self.basket?.productAmounts?[name] = amount ?? 0
+        if amount > 0 {
+            // if basket does not contain product-Item, add it
+            if let items = self.basket?.itemsTypes,
+                let name = self.products?[tag].productName {
+                if !items.contains(name) {
+                    self.basket?.itemsTypes?.append(name)
+                    let amount = self.products?[tag].nrOfProducts
+                    self.basket?.productAmounts?[name] = amount ?? 0
+                }
             }
+            self.nrOfItems = self.basket?.itemsTypes?.count
+            self.nrOfItemsLblOutlet.text = "\(self.nrOfItems ?? 0)"
+            
+            self.setNewAmountForProduct(tag: tag, amount: amount)
+            self.setNewAmountInBasket(productName: productName, amount: amount)
         }
-        self.nrOfItems = self.basket?.itemsTypes?.count
-        self.nrOfItemsLblOutlet.text = "\(self.nrOfItems ?? 0)"
-        
-        self.setNewAmountForProduct(tag: tag, amount: amount)
-        self.setNewAmountInBasket(productName: productName, amount: amount)
     }
     
     // MARK: Network-calls
