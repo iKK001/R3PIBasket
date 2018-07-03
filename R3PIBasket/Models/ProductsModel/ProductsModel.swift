@@ -93,7 +93,7 @@ struct PeasProduct: Product {
     var productCurrency: Currency = .USD
     var productPrice: Float = ProductUnitPriceInUSD.Peas.rawValue
     var unitDescriptionLabel: ProductUnitDescription = .perBag
-    var nrOfProducts: Int = 1
+    var nrOfProducts: Int = 0
 }
 
 struct EggsProduct: Product {
@@ -102,7 +102,7 @@ struct EggsProduct: Product {
     var productCurrency: Currency = .USD
     var productPrice: Float = ProductUnitPriceInUSD.Eggs.rawValue
     var unitDescriptionLabel: ProductUnitDescription = .perDozen
-    var nrOfProducts: Int = 1
+    var nrOfProducts: Int = 0
 }
 
 struct MilkProduct: Product {
@@ -111,7 +111,7 @@ struct MilkProduct: Product {
     var productCurrency: Currency = .USD
     var productPrice: Float = ProductUnitPriceInUSD.Milk.rawValue
     var unitDescriptionLabel: ProductUnitDescription = .perBottle
-    var nrOfProducts: Int = 1
+    var nrOfProducts: Int = 0
 }
 
 struct BeansProduct: Product {
@@ -120,5 +120,5 @@ struct BeansProduct: Product {
     var productCurrency: Currency = .USD
     var productPrice: Float = ProductUnitPriceInUSD.Beans.rawValue
     var unitDescriptionLabel: ProductUnitDescription = .perCan
-    var nrOfProducts: Int = 1
+    var nrOfProducts: Int = 0
 }

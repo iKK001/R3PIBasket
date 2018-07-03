@@ -86,19 +86,20 @@ class BasketViewController: UIViewController, CurrencyDelegate, UITableViewDeleg
             self.basket?.productAmounts![ProductName(rawValue: self.basketProducts![indexPath.row].productName.rawValue)!] = newAmount
         }
         
-        basketCell.removeFromBasketBtnCompletion = { product in
+        basketCell.removeFromBasketBtnCompletion = { productN in
             
             self.basketProducts?.remove(at: indexPath.row)
-            if let product = product {
-                self.basket?.removeBasketItem(withName: product)
+            if let productN = productN {
+                self.basket?.removeAmountItem(withName: productN)
+                self.basket?.removeBasketItem(withName: productN)
             }
-            if self.basketProducts?.count ?? 0 >= indexPath.row + 1 {
-                if let _ = self.basket?.productAmounts,
-                    let pro = self.basketProducts?[indexPath.row],
-                    let productN = ProductName(rawValue: pro.productName.rawValue) {
-                    self.basket?.productAmounts![productN] = 0
-                }
-            }
+            
+             if let _ = self.basket?.itemsTypes,
+                 let products = self.basketProducts,
+                 let amounts = self.basket?.productAmounts {
+                 print(products)
+                 print(amounts)
+             }
 
             self.basketTableView.reloadData()
         }

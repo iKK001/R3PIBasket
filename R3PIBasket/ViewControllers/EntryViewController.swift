@@ -54,6 +54,9 @@ class EntryViewController: UIViewController, CurrencyDelegate {
             productsChoiceVC.products?.append(MilkProduct())
             productsChoiceVC.products?.append(BeansProduct())
             // start with virgin-basket
+            self.defaults.removeObject(forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_BASKET_PRODUCT_AMOUNT)
+            self.defaults.removeObject(forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_BASKET_ITEM_TYPES)
+            self.defaults.removeObject(forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_CURRENCY_CHOICE)
             productsChoiceVC.basket = Basket()
             productsChoiceVC.basket?.itemsTypes = [ProductName]()
             productsChoiceVC.basket?.productAmounts = [ProductName:Int]()

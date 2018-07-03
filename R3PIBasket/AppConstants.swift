@@ -62,5 +62,6 @@ struct AppConstants {
         static let USER_DEFAULT_NR_OF_ITMEMS_IN_BASKET = "NrOfItemsInBasket"
         static let USER_DEFAULT_BASKET_ITEM_TYPES = "BasketItemTypes"
         static let USER_DEFAULT_BASKET_PRODUCT_AMOUNT = "BasketProductAmount"
+        static let USER_DEFAULT_BASKET_PRODUCT_AMOUNT_KEY = "BasketProductAmountKey"
     }
 }

@@ -223,12 +223,14 @@ class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableVi
     func signalProductUpdate() {
         
         // update products
-        if let existingProducts = self.products,
-           let basket = self.basket {
-            for (idx, existingProd) in existingProducts.enumerated() {
-                let prod = existingProd.productName
-                if let amount = basket.productAmounts?[prod] {
-                    self.products![idx].nrOfProducts = amount
+        if let _ = self.basket?.itemsTypes,
+            let products = self.products,
+            let amounts = self.basket?.productAmounts {
+            for (prodIdx, prod) in products.enumerated() {
+                for (key, value) in amounts {  // amounts is of type [ProductName: Int]
+                    if key == prod.productName {
+                        self.products![prodIdx].nrOfProducts = value
+                    }
                 }
             }
         }

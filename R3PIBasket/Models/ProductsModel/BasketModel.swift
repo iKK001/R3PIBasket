@@ -63,14 +63,15 @@ struct Basket: BasketItem {
     var productAmounts: [ProductName: Int]? {
         get {
             // persistency-GET
-            // since only INT-arrays can be restored - some sort of wrapper is needed
+            // since only INT-arrays and STRING-arrays can be restored - some sort of wrapper is needed
             var _productAmounts: [ProductName: Int] = [ProductName: Int]()
             let productAmountIntArr = self.defaults.object(forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_BASKET_PRODUCT_AMOUNT) as? [Int] ?? [0]
+            let productAmountKeyArr = self.defaults.object(forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_BASKET_PRODUCT_AMOUNT_KEY) as? [String] ?? [""]
             _productAmounts.removeAll()
             for (idx, _) in productAmountIntArr.enumerated()  {
                 if (self.itemsTypes?.count ?? 0) > idx {
-                    if let productName = self.itemsTypes?[idx] {
-                        _productAmounts[productName] = productAmountIntArr[idx]
+                    if let prodN = ProductName(rawValue: productAmountKeyArr[idx]) {
+                        _productAmounts[prodN] = productAmountIntArr[idx]
                     }
                 }
             }
@@ -78,15 +79,19 @@ struct Basket: BasketItem {
         }
         set {
             // persistency-SET
-            // since only INT-arrays can be stored - some sort of wrapper is needed
-            var _productAmounts: [Int] = [Int]()
+            // since only INT-arrays and STRING-arrays can be stored - some sort of wrapper is needed
+            var _productAmounts: [Int] = [0]
+            var _productAmountKeys: [String] = [""]
             _productAmounts.removeAll()
-            if let items = self.itemsTypes {
+            _productAmountKeys.removeAll()
+            if let items = self.itemsTypes {  // !!!!
                 for item in items {
                     _productAmounts.append(newValue![item] ?? 0)
+                    _productAmountKeys.append(item.rawValue)
                 }
             }
             self.defaults.set(_productAmounts, forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_BASKET_PRODUCT_AMOUNT)
+            self.defaults.set(_productAmountKeys, forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_BASKET_PRODUCT_AMOUNT_KEY)
             
             self.defaults.synchronize()
         }
@@ -121,6 +126,20 @@ struct Basket: BasketItem {
         if indexToRemove != -1 {
             self.itemsTypes?.remove(at: indexToRemove)
         }
-        
+    }
+    
+    mutating func removeAmountItem(withName: ProductName) {
+        var keyToRemove: ProductName? = nil
+        if let amounts = self.productAmounts {
+            for (key, _) in amounts { // amounts is of type [ProductName: Int]
+                if key == withName {
+                    keyToRemove = key
+                    break
+                }
+            }
+        }
+        if let ktr = keyToRemove {
+            self.productAmounts?.removeValue(forKey: ktr)
+        }
     }
 }
