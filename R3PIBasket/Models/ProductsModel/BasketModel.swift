@@ -68,7 +68,11 @@ struct Basket: BasketItem {
             let productAmountIntArr = self.defaults.object(forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_BASKET_PRODUCT_AMOUNT) as? [Int] ?? [0]
             _productAmounts.removeAll()
             for (idx, _) in productAmountIntArr.enumerated()  {
-                _productAmounts[self.itemsTypes![idx]] = productAmountIntArr[idx]
+                if (self.itemsTypes?.count ?? 0) > idx {
+                    if let productName = self.itemsTypes?[idx] {
+                        _productAmounts[productName] = productAmountIntArr[idx]
+                    }
+                }
             }
             return _productAmounts
         }
@@ -104,7 +108,7 @@ struct Basket: BasketItem {
         }
     }
     
-    mutating func removeItem(withName: ProductName) {
+    mutating func removeBasketItem(withName: ProductName) {
         var indexToRemove: Int = -1
         if let itemTs = self.itemsTypes {
             for (idx, name) in itemTs.enumerated() {
@@ -115,9 +119,6 @@ struct Basket: BasketItem {
             }
         }
         if indexToRemove != -1 {
-
-//            self.defaults.removeObject(forKey: (AppConstantsWatch.USER_DEFAULT_STATE_OF_ENTRY + name))
-            
             self.itemsTypes?.remove(at: indexToRemove)
         }
         

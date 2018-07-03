@@ -117,7 +117,7 @@ class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableVi
         
         // completion-handler when AddBasket-Button of a cell is pressed
         productCell.addToBasketBtnCompletion = { tag in
-            self.updateNrOfItemsInBasket(tag: tag, productName: ProductName(rawValue: productCell.productName.text ?? "")!, amount: Int(productCell.nrOfProductsTextField.text ?? "") ?? 0)
+            self.updateAmountsAndNumberOfItems(tag: tag, productName: ProductName(rawValue: productCell.productName.text ?? "")!, amount: Int(productCell.nrOfProductsTextField.text ?? "") ?? 0)
         }
 
         return productCell
@@ -144,7 +144,7 @@ class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableVi
         }
     }
     
-    func updateNrOfItemsInBasket(tag: Int, productName: ProductName, amount: Int) {
+    func updateAmountsAndNumberOfItems(tag: Int, productName: ProductName, amount: Int) {
         
         // if basket does not contain product-Item, add it
         if let items = self.basket?.itemsTypes,
@@ -222,14 +222,9 @@ class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableVi
     
     func signalProductUpdate() {
         
+        // update products
         if let existingProducts = self.products,
            let basket = self.basket {
-           // update currency
-        self.currencyChoiceBtnOutlet.setTitle(basket.basketCurrency.rawValue + " >", for: .normal)
-            self.setCurrencyForAllProducts()
-            self.getNewestConversionFactor()
-            
-            // update products
             for (idx, existingProd) in existingProducts.enumerated() {
                 let prod = existingProd.productName
                 if let amount = basket.productAmounts?[prod] {
@@ -237,6 +232,14 @@ class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableVi
                 }
             }
         }
+        // update currency
+        self.currencyChoiceBtnOutlet.setTitle(self.basket?.basketCurrency.rawValue ?? "" + " >", for: .normal)
+        self.setCurrencyForAllProducts()
+        self.getNewestConversionFactor()
+        // update Item counter in Basket
+        self.nrOfItems = self.basket?.itemsTypes?.count
+        self.nrOfItemsLblOutlet.text = "\(self.nrOfItems ?? 0)"
+        // update the productsTableView
         self.productTableView.reloadData()
     }
 }

@@ -23,14 +23,7 @@ class BasketViewController: UIViewController, CurrencyDelegate, UITableViewDeleg
     @IBOutlet weak var currencyChoiceBtnOutlet: UIButton!
     
     var conversionFactor: Float?
-    
     var basketProducts: [Product]?
-    
-    // persistency of Basket
-    // if more time - this would perferably be done by CoreData or Realm
-    //
-    // Since User-Defaults can store Int's, String's or [String]'s
-    // there is a composition of the Basket-object
     var basket: Basket?
     
     override func viewDidLoad() {
@@ -95,11 +88,9 @@ class BasketViewController: UIViewController, CurrencyDelegate, UITableViewDeleg
         
         basketCell.removeFromBasketBtnCompletion = { product in
             
-            
-            
             self.basketProducts?.remove(at: indexPath.row)
             if let product = product {
-                self.basket?.removeItem(withName: product)
+                self.basket?.removeBasketItem(withName: product)
             }
             if self.basketProducts?.count ?? 0 >= indexPath.row + 1 {
                 if let _ = self.basket?.productAmounts,
