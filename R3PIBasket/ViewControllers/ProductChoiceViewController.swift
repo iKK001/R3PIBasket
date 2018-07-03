@@ -167,44 +167,53 @@ class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableVi
     // MARK: Network-calls
     
     func getNewestConversionFactor() {
-        // make a network-call to get most up-to-date Currency conversion
-        // ..do this in the background not to bother the UI..
-        let workItem_BG_CurrencyFetch = DispatchWorkItem {
-            let currencyAPI = CurrencyPlayerAPI()
-            
-            let access_key = AppConstants.APIKeys.CURRENCY_PLAYER_API_KEY
-            let source = "USD"
-            let currencies = self.basket?.basketCurrency.rawValue ?? "USD"
-            let format = "1"
-            
-            let inputTerms: [String:String] = [
-                CurrenyPlayerAPIAttributes.access_key.rawValue:access_key,
-                CurrenyPlayerAPIAttributes.source.rawValue:source,
-                CurrenyPlayerAPIAttributes.currencies.rawValue:currencies,
-                CurrenyPlayerAPIAttributes.format.rawValue:format
-            ]
-            currencyAPI.getCurrencyConversionResults(inputTerms: inputTerms) { (currencyResult, error) in
+        
+        if iKKHelperClass.checkWiFi() {
+            // make a network-call to get most up-to-date Currency conversion
+            // ..do this in the background not to bother the UI..
+            let workItem_BG_CurrencyFetch = DispatchWorkItem {
+                let currencyAPI = CurrencyPlayerAPI()
                 
-                // check for error
-                guard error == nil else {
-                    // inform user that the network-fetch was not successful
-                    let alertController = UIAlertController(title: "Currency Conversion Error!", message: "The Network-provider was not able to deliver the required Currency-Information.\r\n\r\nPlease try again later...", preferredStyle: UIAlertControllerStyle.alert)
-                    alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default,handler: nil))
-                    self.present(alertController, animated: true, completion: nil)
-                    return
-                }
-                // if successful:
-                // get currency-conversion-factor from API
-                // (there is only one non-nil quotes-entry since we only asked for one)
-                self.conversionFactor = currencyResult?.quotes?.getFirstNonNilValue()
-                // reload tableView with new conversion-factor
-                DispatchQueue.main.async {
-                    self.productTableView.reloadData()
+                let access_key = AppConstants.APIKeys.CURRENCY_PLAYER_API_KEY
+                let source = "USD"
+                let currencies = self.basket?.basketCurrency.rawValue ?? "USD"
+                let format = "1"
+                
+                let inputTerms: [String:String] = [
+                    CurrenyPlayerAPIAttributes.access_key.rawValue:access_key,
+                    CurrenyPlayerAPIAttributes.source.rawValue:source,
+                    CurrenyPlayerAPIAttributes.currencies.rawValue:currencies,
+                    CurrenyPlayerAPIAttributes.format.rawValue:format
+                ]
+                currencyAPI.getCurrencyConversionResults(inputTerms: inputTerms) { (currencyResult, error) in
+                    
+                    // check for error
+                    guard error == nil else {
+                        // inform user that the network-fetch was not successful
+                        let alertController = UIAlertController(title: "Currency Conversion Error!", message: "The Network-provider was not able to deliver the required Currency-Information.\r\n\r\nPlease try again later...", preferredStyle: UIAlertControllerStyle.alert)
+                        alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default,handler: nil))
+                        self.present(alertController, animated: true, completion: nil)
+                        return
+                    }
+                    // if successful:
+                    // get currency-conversion-factor from API
+                    // (there is only one non-nil quotes-entry since we only asked for one)
+                    self.conversionFactor = currencyResult?.quotes?.getFirstNonNilValue()
+                    // reload tableView with new conversion-factor
+                    DispatchQueue.main.async {
+                        self.productTableView.reloadData()
+                    }
                 }
             }
+            // then call the new workItem to be carried out in a concurrent BG-thread
+            DispatchQueue.global(qos:.userInteractive).async(execute: workItem_BG_CurrencyFetch)
+        } else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(300)) {
+                let alertController = UIAlertController(title: "No inernet !", message: "You must be online in order to get newest product currency information.", preferredStyle: UIAlertControllerStyle.alert)
+                alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default,handler: nil))
+                self.present(alertController, animated: true, completion: nil)
+            }
         }
-        // then call the new workItem to be carried out in a concurrent BG-thread
-        DispatchQueue.global(qos:.userInteractive).async(execute: workItem_BG_CurrencyFetch)
     }
     
     // MARK: Target-Actions
@@ -237,7 +246,7 @@ class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableVi
             }
         }
         // update currency
-        self.currencyChoiceBtnOutlet.setTitle(self.basket?.basketCurrency.rawValue ?? "" + " >", for: .normal)
+    self.currencyChoiceBtnOutlet.setTitle((self.basket?.basketCurrency.rawValue ?? "") + " >", for: .normal)
         self.setCurrencyForAllProducts()
         self.getNewestConversionFactor()
         // update Item counter in Basket

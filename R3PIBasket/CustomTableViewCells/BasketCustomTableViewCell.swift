@@ -20,6 +20,7 @@ class BasketCustomTableViewCell: UITableViewCell, UITextFieldDelegate {
     
     var removeFromBasketBtnCompletion : ((ProductName?) -> Void)? = nil
     var updateBasketCompletion : ((Int?) -> Void)? = nil
+    var conversionFactor: Float?
 
     var product: Product! {
         didSet {
@@ -39,8 +40,11 @@ class BasketCustomTableViewCell: UITableViewCell, UITextFieldDelegate {
     }
     
     func calculateConversion(conversionFactor: Float?) {
+        self.conversionFactor = conversionFactor
+        
         if let conversionF = conversionFactor {
-            let USDprice: Float = self.product.productPrice
+            let prodN = self.product.productName
+            let USDprice: Float = Float(self.product.nrOfProducts) * (ProductUnitPriceInUSD.getUnitPriceInUSD(productName: prodN) ?? 1.0)
             let newPrice: Float = USDprice * conversionF
             self.productPrice.text = String(format: "%.2f", newPrice)
         } else {
@@ -64,6 +68,9 @@ class BasketCustomTableViewCell: UITableViewCell, UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
+        // update productPrice
+        self.product.nrOfProducts = Int(textField.text!) ?? 1
+        self.calculateConversion(conversionFactor: self.conversionFactor)
         // execute the removeFromBasketCompletion closure
         if let updateBasketAction = self.updateBasketCompletion {
             updateBasketAction(Int(textField.text ?? ""))
@@ -76,7 +83,6 @@ class BasketCustomTableViewCell: UITableViewCell, UITextFieldDelegate {
     }
     
     @IBAction func removeFromBasketBtnPressed(_ sender: Any) {
-        
         // execute the removeFromBasketCompletion closure
         if let removeFromBasketBtnAction = self.removeFromBasketBtnCompletion {
             removeFromBasketBtnAction(ProductName(rawValue: self.productName.text ?? ""))

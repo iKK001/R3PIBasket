@@ -13,7 +13,7 @@ protocol ProductsDelegate: class {
     func signalProductUpdate()
 }
 
-class BasketViewController: UIViewController, CurrencyDelegate, UITableViewDelegate, UITableViewDataSource {
+class BasketViewController: UIViewController, CurrencyDelegate, ProductsDelegate, UITableViewDelegate, UITableViewDataSource {
     
     fileprivate let defaults = UserDefaults(suiteName: AppConstants.USERDEFAULTS.USER_DEFAULT_SUITE_NAME)!
     
@@ -21,6 +21,8 @@ class BasketViewController: UIViewController, CurrencyDelegate, UITableViewDeleg
     
     @IBOutlet weak var basketTableView: UITableView!
     @IBOutlet weak var currencyChoiceBtnOutlet: UIButton!
+    @IBOutlet weak var continueShoppingBtnOutlet: UIButton!
+    @IBOutlet weak var goToPaymentBtnOutlet: UIButton!
     
     var conversionFactor: Float?
     var basketProducts: [Product]?
@@ -37,13 +39,34 @@ class BasketViewController: UIViewController, CurrencyDelegate, UITableViewDeleg
         self.view.addGestureRecognizer(tap)
         
         // set properties
-        self.currencyChoiceBtnOutlet.setTitle((self.basket?.basketCurrency.rawValue ?? "USD") + " >", for: .normal)
+    self.currencyChoiceBtnOutlet.setTitle((self.basket?.basketCurrency.rawValue ?? "USD") + " >", for: .normal)
         
         self.setCurrencyForAllProducts()
+        self.setLookAndFeel()
     }
     
     @objc func hideKeyboardByTappingOutside() {
         self.view.endEditing(true)
+    }
+    
+    func setLookAndFeel() {
+        switch AppConstants.FEATUREFLAG.DEVICE_MODEL_NAME {
+        case Devices.IPhone5, Devices.IPhone5S, Devices.IPhone5C:
+            self.goToPaymentBtnOutlet.setTitle("Payment >", for: .normal)
+            self.continueShoppingBtnOutlet.setTitle("< Continue", for: .normal)
+        case Devices.IPhone6, Devices.IPhone6S, Devices.IPhone7, Devices.IPhone8:
+            self.goToPaymentBtnOutlet.setTitle("Go to Payment >", for: .normal)
+            self.continueShoppingBtnOutlet.setTitle("< Continue Shopping", for: .normal)
+        case Devices.IPhone6Plus, Devices.IPhone6SPlus, Devices.IPhone7Plus, Devices.IPhone8Plus:
+            self.goToPaymentBtnOutlet.setTitle("Go to Payment >", for: .normal)
+            self.continueShoppingBtnOutlet.setTitle("< Continue Shopping", for: .normal)
+        case Devices.IPhoneX:
+            self.goToPaymentBtnOutlet.setTitle("Go to Payment >", for: .normal)
+            self.continueShoppingBtnOutlet.setTitle("< Continue Shopping", for: .normal)
+        default:
+            self.goToPaymentBtnOutlet.setTitle("Go to Payment >", for: .normal)
+            self.continueShoppingBtnOutlet.setTitle("< Continue Shopping", for: .normal)
+        }
     }
     
     // MARK: Segue method
@@ -58,6 +81,7 @@ class BasketViewController: UIViewController, CurrencyDelegate, UITableViewDeleg
         case SegueNames.GoToSummary.rawValue:
             let summaryVC = segue.destination as! SummaryViewController
             summaryVC.title = "Purchase Summary"
+            summaryVC.delegate = self
             summaryVC.basket = self.basket
             summaryVC.conversionFactor = self.conversionFactor
             summaryVC.basketProducts = [Product]()
@@ -149,47 +173,65 @@ class BasketViewController: UIViewController, CurrencyDelegate, UITableViewDeleg
         }
     }
     
+    func signalProductUpdate() {
+        // update currency
+    self.currencyChoiceBtnOutlet.setTitle((self.basket?.basketCurrency.rawValue ?? "") + " >", for: .normal)
+        self.setCurrencyForAllProducts()
+        self.getNewestConversionFactor()
+        // update the productsTableView
+        self.basketTableView.reloadData()
+    }
+    
     // MARK: Network-calls
     
     func getNewestConversionFactor() {
-        // make a network-call to get most up-to-date Currency conversion
-        // ..do this in the background not to bother the UI..
-        let workItem_BG_CurrencyFetch = DispatchWorkItem {
-            let currencyAPI = CurrencyPlayerAPI()
-            
-            let access_key = AppConstants.APIKeys.CURRENCY_PLAYER_API_KEY
-            let source = "USD"
-            let currencies = self.basket?.basketCurrency.rawValue ?? "USD"
-            let format = "1"
-            
-            let inputTerms: [String:String] = [
-                CurrenyPlayerAPIAttributes.access_key.rawValue:access_key,
-                CurrenyPlayerAPIAttributes.source.rawValue:source,
-                CurrenyPlayerAPIAttributes.currencies.rawValue:currencies,
-                CurrenyPlayerAPIAttributes.format.rawValue:format
-            ]
-            currencyAPI.getCurrencyConversionResults(inputTerms: inputTerms) { (currencyResult, error) in
+        
+        if iKKHelperClass.checkWiFi() {
+            // make a network-call to get most up-to-date Currency conversion
+            // ..do this in the background not to bother the UI..
+            let workItem_BG_CurrencyFetch = DispatchWorkItem {
+                let currencyAPI = CurrencyPlayerAPI()
                 
-                // check for error
-                guard error == nil else {
-                    // inform user that the network-fetch was not successful
-                    let alertController = UIAlertController(title: "Currency Conversion Error!", message: "The Network-provider was not able to deliver the required Currency-Information.\r\n\r\nPlease try again later...", preferredStyle: UIAlertControllerStyle.alert)
-                    alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default,handler: nil))
-                    self.present(alertController, animated: true, completion: nil)
-                    return
-                }
-                // if successful:
-                // get currency-conversion-factor from API
-                // (there is only one non-nil quotes-entry since we only asked for one)
-                self.conversionFactor = currencyResult?.quotes?.getFirstNonNilValue()
-                // reload tableView with new conversion-factor
-                DispatchQueue.main.async {
-                    self.basketTableView.reloadData()
+                let access_key = AppConstants.APIKeys.CURRENCY_PLAYER_API_KEY
+                let source = "USD"
+                let currencies = self.basket?.basketCurrency.rawValue ?? "USD"
+                let format = "1"
+                
+                let inputTerms: [String:String] = [
+                    CurrenyPlayerAPIAttributes.access_key.rawValue:access_key,
+                    CurrenyPlayerAPIAttributes.source.rawValue:source,
+                    CurrenyPlayerAPIAttributes.currencies.rawValue:currencies,
+                    CurrenyPlayerAPIAttributes.format.rawValue:format
+                ]
+                currencyAPI.getCurrencyConversionResults(inputTerms: inputTerms) { (currencyResult, error) in
+                    
+                    // check for error
+                    guard error == nil else {
+                        // inform user that the network-fetch was not successful
+                        let alertController = UIAlertController(title: "Currency Conversion Error!", message: "The Network-provider was not able to deliver the required Currency-Information.\r\n\r\nPlease try again later...", preferredStyle: UIAlertControllerStyle.alert)
+                        alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default,handler: nil))
+                        self.present(alertController, animated: true, completion: nil)
+                        return
+                    }
+                    // if successful:
+                    // get currency-conversion-factor from API
+                    // (there is only one non-nil quotes-entry since we only asked for one)
+                    self.conversionFactor = currencyResult?.quotes?.getFirstNonNilValue()
+                    // reload tableView with new conversion-factor
+                    DispatchQueue.main.async {
+                        self.basketTableView.reloadData()
+                    }
                 }
             }
+            // then call the new workItem to be carried out in a concurrent BG-thread
+            DispatchQueue.global(qos:.userInteractive).async(execute: workItem_BG_CurrencyFetch)
+        } else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(300)) {
+                let alertController = UIAlertController(title: "No inernet !", message: "You must be online in order to get newest product currency information.", preferredStyle: UIAlertControllerStyle.alert)
+                alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default,handler: nil))
+                self.present(alertController, animated: true, completion: nil)
+            }
         }
-        // then call the new workItem to be carried out in a concurrent BG-thread
-        DispatchQueue.global(qos:.userInteractive).async(execute: workItem_BG_CurrencyFetch)
     }
     
     // MARK: Target-Actions
