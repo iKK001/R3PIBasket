@@ -13,11 +13,11 @@ protocol ProductsDelegate: class {
     func signalProductUpdate()
 }
 
-class BasketViewController: UIViewController, CurrencyDelegate, ProductsDelegate, UITableViewDelegate, UITableViewDataSource {
+class BasketViewController: UIViewController, CurrencyDelegate, BasketDelegate, UITableViewDelegate, UITableViewDataSource {
     
     fileprivate let defaults = UserDefaults(suiteName: AppConstants.USERDEFAULTS.USER_DEFAULT_SUITE_NAME)!
     
-    weak var delegate: ProductsDelegate?
+    weak var productDelegate: ProductsDelegate?
     
     @IBOutlet weak var basketTableView: UITableView!
     @IBOutlet weak var currencyChoiceBtnOutlet: UIButton!
@@ -130,15 +130,16 @@ class BasketViewController: UIViewController, CurrencyDelegate, ProductsDelegate
         case SegueNames.GoToSummary.rawValue:
             let summaryVC = segue.destination as! SummaryViewController
             summaryVC.title = "Purchase Summary"
-            summaryVC.delegate = self
+            summaryVC.basketDelegate = self
             // since summary might go back directly to continue shopping - we need to assign this delegate as well..
-            summaryVC.delegate = self.presentingViewController as? ProductsDelegate
+            summaryVC.productDelegate = self.presentingViewController as? ProductsDelegate
             summaryVC.summaryVM.basket = self.basketVM.basket
             summaryVC.summaryVM.conversionFactor = self.basketVM.conversionFactor
             summaryVC.summaryVM.basketProducts = [Product]()
             // inject what you have from the basket into the new VC's products
             let productHelper = ProductHelper()
             summaryVC.summaryVM.basketProducts = productHelper.generateProductsFromBasketInUSD(basket: self.basketVM.basket)
+            (self.basketVM.basketProducts, self.basketVM.basket) = summaryVC.summaryVM.cleanZeros()
         default:
             break
         }
@@ -197,9 +198,9 @@ class BasketViewController: UIViewController, CurrencyDelegate, ProductsDelegate
     
     // MARK: Delegate callback methods
     
-    func signalProductUpdate() {
+    func signalBasketUpdate() {
         // update currency
-        self.currencyChoiceBtnOutlet.setTitle((self.basketVM.basket?.basketCurrency.rawValue ?? "") + " >", for: .normal)
+    self.currencyChoiceBtnOutlet.setTitle((self.basketVM.basket?.basketCurrency.rawValue ?? "") + " >", for: .normal)
         self.basketVM.setCurrencyForAllProducts()
         self.basketVM.getNewestConversionFactor()
         // update the productsTableView
@@ -214,7 +215,7 @@ class BasketViewController: UIViewController, CurrencyDelegate, ProductsDelegate
     
     @IBAction func continueShoppingBtnPressed(_ sender: Any) {
         
-        self.delegate?.signalProductUpdate()
+        self.productDelegate?.signalProductUpdate()
         self.dismiss(animated: true, completion: nil)
     }
     

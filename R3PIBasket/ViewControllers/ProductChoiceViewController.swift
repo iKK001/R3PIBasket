@@ -102,7 +102,7 @@ class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableVi
         case SegueNames.GoToBasket.rawValue:
             let basketVC = segue.destination as! BasketViewController
             basketVC.title = "Basket"
-            basketVC.delegate = self
+            basketVC.productDelegate = self
             basketVC.basketVM.basket = self.prodVM.basket
             basketVC.basketVM.conversionFactor = self.prodVM.conversionFactor
             basketVC.basketVM.basketProducts = [Product]()

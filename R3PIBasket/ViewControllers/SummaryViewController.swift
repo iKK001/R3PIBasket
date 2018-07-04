@@ -9,12 +9,17 @@
 import Foundation
 import UIKit
 
+protocol BasketDelegate: class {
+    func signalBasketUpdate()
+}
+
 class SummaryViewController: UIViewController, CurrencyDelegate, UITableViewDelegate, UITableViewDataSource {
     
     fileprivate let defaults = UserDefaults(suiteName: AppConstants.USERDEFAULTS.USER_DEFAULT_SUITE_NAME)!
     fileprivate let cellHeight: CGFloat = 68.0
     
-    weak var delegate: ProductsDelegate?
+    weak var productDelegate: ProductsDelegate?
+    weak var basketDelegate: BasketDelegate?
     
     @IBOutlet weak var summaryTableView: UITableView!
     @IBOutlet weak var currencyChoiceBtnOutlet: UIButton!
@@ -96,7 +101,7 @@ class SummaryViewController: UIViewController, CurrencyDelegate, UITableViewDele
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.summaryVM.basket?.itemsTypes?.count ?? 0
+        return self.summaryVM.basketProducts?.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -158,12 +163,12 @@ class SummaryViewController: UIViewController, CurrencyDelegate, UITableViewDele
     }
     
     @IBAction func backBtnPressed(_ sender: Any) {
-        self.delegate?.signalProductUpdate()
+        self.basketDelegate?.signalBasketUpdate()
         self.dismiss(animated: true, completion: nil)
     }
     
     @IBAction func continueShoppingBtnPressed(_ sender: Any) {
-        self.delegate?.signalProductUpdate()
+        self.productDelegate?.signalProductUpdate()
     self.presentingViewController?.presentingViewController?.dismiss(animated: true, completion: nil)
     }
 }
