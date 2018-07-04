@@ -31,4 +31,34 @@ class ProductHelper {
         }
         return returnBasketProducts
     }
+    
+    // cosmetics-helper function, that...
+    // - returns a tuple of products and basket
+    // - the returnProd does not contain any zero-amount items
+    // - the returnBasket deos not contain any zero-amount items
+    // (the method is needed to clean up before dependency injection to next ViewController)
+    func cleanZeros(products: [Product]?, basket: Basket?) -> ([Product]?, Basket?) {
+        
+        var returnProd = products
+        if let products = products {
+            for (idx, product) in products.enumerated() {
+                if product.nrOfProducts == 0 {
+                    returnProd?.remove(at: idx)
+                }
+            }
+        }
+        
+        var returnBasket = basket
+        if let items = basket?.itemsTypes {
+            for (idx, item) in items.enumerated() {
+                if let amount = basket?.productAmounts?[item] {
+                    if amount == 0 {
+                        returnBasket?.itemsTypes?.remove(at: idx)
+                        returnBasket?.productAmounts?.removeValue(forKey: item)
+                    }
+                }
+            }
+        }
+        return (returnProd!, returnBasket!)
+    }
 }

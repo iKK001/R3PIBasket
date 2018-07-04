@@ -37,36 +37,14 @@ class SummaryViewModel {
         return total
     }
     
-    // cosmetics-helper function, that...
-    // - returns a tuple of products and basket
-    // - the returnProd does not contain any zero-amount items
-    // - the returnBasket deos not contain any zero-amount items
-    // (the method is needed to clean up before dependency injection to next ViewController)
+    // cosmetics-helper function
     func cleanZeros() -> ([Product]?, Basket?) {
         
-        var returnProd = self.basketProducts
-        if let products = self.basketProducts {
-            for (idx, product) in products.enumerated() {
-                if product.nrOfProducts == 0 {
-                    returnProd?.remove(at: idx)
-                }
-            }
-        }
-        self.basketProducts?.removeAll()
-        self.basketProducts = returnProd
-        
-        var returnBasket = self.basket
-        if let items = self.basket?.itemsTypes {
-            for (idx, item) in items.enumerated() {
-                if let amount = self.basket?.productAmounts?[item] {
-                    if amount == 0 {
-                        returnBasket?.itemsTypes?.remove(at: idx)
-                        returnBasket?.productAmounts?.removeValue(forKey: item)
-                    }
-                }
-            }
-        }
-        return (returnProd!, returnBasket!)
+        let productHelper = ProductHelper()
+        let (products, basket) = productHelper.cleanZeros(products: self.basketProducts, basket: self.basket)
+        self.basketProducts = products
+        self.basket = basket
+        return (products, basket)
     }
     
     // MARK: Network-calls
