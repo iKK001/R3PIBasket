@@ -132,19 +132,4 @@ struct Basket: BasketItem {
             }
         }
     }
-    
-//    mutating func removeAmountItem(withName: ProductName) {
-//        var keyToRemove: ProductName? = nil
-//        if let amounts = self.productAmounts {
-//            for (key, _) in amounts { // amounts is of type [ProductName: Int]
-//                if key == withName {
-//                    keyToRemove = key
-//                    break
-//                }
-//            }
-//        }
-//        if let ktr = keyToRemove {
-//            self.productAmounts?.removeValue(forKey: ktr)
-//        }
-//    }
 }

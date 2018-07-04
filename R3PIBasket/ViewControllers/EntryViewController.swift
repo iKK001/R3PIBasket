@@ -53,7 +53,7 @@ class EntryViewController: UIViewController, CurrencyDelegate {
             // inject initial data to basket
             productsChoiceVC.prodVM.basket = Basket()
             productsChoiceVC.prodVM.basket?.basketCurrency = self.entryViewModel.currencyChoice
-            // update products
+            // inject what you have from the basket into the new VC's products
             if let _ = productsChoiceVC.prodVM.basket?.itemsTypes,
                 let products = productsChoiceVC.prodVM.products,
                 let amounts = productsChoiceVC.prodVM.basket?.productAmounts {
