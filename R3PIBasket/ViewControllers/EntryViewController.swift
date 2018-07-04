@@ -17,6 +17,7 @@ class EntryViewController: UIViewController, CurrencyDelegate {
     @IBOutlet weak var currencyChoiceButtonOutlet: UIButton!
     @IBOutlet weak var startFromOldStateSwitchOutlet: UISwitch!
     @IBOutlet weak var ONLblOutlet: UILabel!
+    @IBOutlet weak var versionOutlet: UILabel!
     
     var entryViewModel = EntryViewModel()
 
@@ -26,6 +27,13 @@ class EntryViewController: UIViewController, CurrencyDelegate {
     }
     
     func setLookAndFeel() {
+        
+        if let buildString = Bundle.main.infoDictionary?["CFBundleVersion"] as? String {
+            if let versionString = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
+                let fullVersionString = "version v" + versionString + " (" + buildString + ")"
+                versionOutlet.text = fullVersionString
+            }
+        }
    
         self.startFromOldStateSwitchOutlet.isOn ? (self.ONLblOutlet.isHidden = false) : (self.ONLblOutlet.isHidden = true)
     self.currencyChoiceButtonOutlet.setTitle(self.entryViewModel.currencyChoice.rawValue + " >", for: .normal)
