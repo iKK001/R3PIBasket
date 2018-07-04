@@ -41,9 +41,12 @@ class SummaryCustomTableViewCell: UITableViewCell {
         if let conversionF = conversionFactor {
             let USDprice: Float = self.product.productPrice
             let newPrice: Float = USDprice * conversionF
+            let unitPrice: Float = (ProductUnitPriceInUSD.getUnitPriceInUSD(productName: self.product.productName) ?? 1.0) * conversionF
             self.productPrice.text = String(format: "%.2f", newPrice)
+            self.unitPrice.text = String(format: "%.2f", unitPrice)
         } else {
             self.productPrice.text = String(format: "%.2f", self.product.productPrice)
+            self.unitPrice.text = String(format: "%.2f", (ProductUnitPriceInUSD.getUnitPriceInUSD(productName: self.product.productName) ?? 1.0))
         }
     }
 }

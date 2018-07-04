@@ -29,15 +29,6 @@ class iKKHelperClass {
             alpha: CGFloat(1.0)
         )
     }
-    
-    static func attributedText(withString string: String, boldString: String, font: UIFont) -> NSAttributedString {
-        let attributedString = NSMutableAttributedString(string: string,
-                                                         attributes: [NSAttributedStringKey.font: font])
-        let boldFontAttribute: [NSAttributedStringKey: Any] = [NSAttributedStringKey.font: UIFont.boldSystemFont(ofSize: font.pointSize)]
-        let range = (string as NSString).range(of: boldString)
-        attributedString.addAttributes(boldFontAttribute, range: range)
-        return attributedString
-    }
 
 	static func checkWiFi() -> Bool {
 		
@@ -53,12 +44,4 @@ class iKKHelperClass {
 			return true
 		}
 	}
-    
-    static func pad(string : String, toSize: Int) -> String {
-        var padded = string
-        for _ in 0..<(toSize - string.count) {
-            padded = "0" + padded
-        }
-        return padded
-    }
 }

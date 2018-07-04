@@ -137,22 +137,8 @@ class BasketViewController: UIViewController, CurrencyDelegate, ProductsDelegate
             summaryVC.summaryVM.conversionFactor = self.basketVM.conversionFactor
             summaryVC.summaryVM.basketProducts = [Product]()
             // inject what you have from the basket into the new VC's products
-            if let itemTypes = self.basketVM.basket?.itemsTypes {
-                for (idx, item) in itemTypes.enumerated() {
-                    if let anyProd = GenericProduct.createProduct(productName: item) {
-                        
-                        var anyProduct = anyProd
-                        summaryVC.summaryVM.basketProducts?.append(anyProduct)
-                        if let productName = self.basketVM.basket?.itemsTypes?[idx],
-                            let unitPrice = ProductUnitPriceInUSD.getUnitPriceInUSD(productName: productName) {
-                            let nrOfProducts = (self.basketVM.basket?.productAmounts?[productName])!
-                            anyProduct.productPrice = Float(nrOfProducts) * unitPrice
-                            anyProduct.nrOfProducts = nrOfProducts
-                            summaryVC.summaryVM.basketProducts?[idx] = anyProduct
-                        }
-                    }
-                }
-            }
+            let productHelper = ProductHelper()
+            summaryVC.summaryVM.basketProducts = productHelper.generateProductsFromBasketInUSD(basket: self.basketVM.basket)
         default:
             break
         }

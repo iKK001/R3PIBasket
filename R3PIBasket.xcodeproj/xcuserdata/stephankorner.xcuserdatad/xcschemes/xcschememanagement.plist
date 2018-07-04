@@ -9,6 +9,29 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
+		<key>R3PIBasketTests.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>8F5256BC20E61A3F008CC8E8</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>8F5256D020E61A40008CC8E8</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>8F5256DB20E61A40008CC8E8</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 	</dict>
 </dict>
 </plist>
