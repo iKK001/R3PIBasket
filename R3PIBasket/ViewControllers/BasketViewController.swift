@@ -166,8 +166,8 @@ class BasketViewController: UIViewController, CurrencyDelegate, ProductsDelegate
             
             self.basketProducts?.remove(at: indexPath.row)
             if let productN = productN {
-                self.basket?.removeAmountItem(withName: productN)
                 self.basket?.removeBasketItem(withName: productN)
+                // self.basket?.removeAmountItem(withName: productN)
             }
             self.basketTableView.reloadData()
         }

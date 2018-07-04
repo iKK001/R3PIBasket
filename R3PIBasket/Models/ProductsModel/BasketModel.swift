@@ -69,7 +69,7 @@ struct Basket: BasketItem {
             let productAmountKeyArr = self.defaults.object(forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_BASKET_PRODUCT_AMOUNT_KEY) as? [String] ?? [""]
             _productAmounts.removeAll()
             for (idx, _) in productAmountIntArr.enumerated()  {
-                if (self.itemsTypes?.count ?? 0) > idx {
+                if productAmountKeyArr.count > idx {
                     if let prodN = ProductName(rawValue: productAmountKeyArr[idx]) {
                         _productAmounts[prodN] = productAmountIntArr[idx]
                     }
@@ -115,31 +115,36 @@ struct Basket: BasketItem {
     
     mutating func removeBasketItem(withName: ProductName) {
         var indexToRemove: Int = -1
+        var nameToRemove: ProductName? = nil
         if let itemTs = self.itemsTypes {
             for (idx, name) in itemTs.enumerated() {
                 if name == withName {
                     indexToRemove = idx
+                    nameToRemove = name
                     break
                 }
             }
         }
         if indexToRemove != -1 {
-            self.itemsTypes?.remove(at: indexToRemove)
+            if let ntr = nameToRemove {
+                self.itemsTypes?.remove(at: indexToRemove)
+                self.productAmounts?.removeValue(forKey: ntr)
+            }
         }
     }
     
-    mutating func removeAmountItem(withName: ProductName) {
-        var keyToRemove: ProductName? = nil
-        if let amounts = self.productAmounts {
-            for (key, _) in amounts { // amounts is of type [ProductName: Int]
-                if key == withName {
-                    keyToRemove = key
-                    break
-                }
-            }
-        }
-        if let ktr = keyToRemove {
-            self.productAmounts?.removeValue(forKey: ktr)
-        }
-    }
+//    mutating func removeAmountItem(withName: ProductName) {
+//        var keyToRemove: ProductName? = nil
+//        if let amounts = self.productAmounts {
+//            for (key, _) in amounts { // amounts is of type [ProductName: Int]
+//                if key == withName {
+//                    keyToRemove = key
+//                    break
+//                }
+//            }
+//        }
+//        if let ktr = keyToRemove {
+//            self.productAmounts?.removeValue(forKey: ktr)
+//        }
+//    }
 }

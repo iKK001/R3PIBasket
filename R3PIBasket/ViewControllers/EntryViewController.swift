@@ -15,6 +15,8 @@ class EntryViewController: UIViewController, CurrencyDelegate {
     
     @IBOutlet weak var startButtonOutlet: UIButton_iKK!
     @IBOutlet weak var currencyChoiceButtonOutlet: UIButton!
+    @IBOutlet weak var startFromOldStateSwitchOutlet: UISwitch!
+    @IBOutlet weak var ONLblOutlet: UILabel!
     
     var currencyChoice: Currency {
         get { return Currency(rawValue: self.defaults.object(forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_CURRENCY_CHOICE) as? String ?? "USD")! }
@@ -26,11 +28,12 @@ class EntryViewController: UIViewController, CurrencyDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         self.setLookAndFeel()
     }
     
     func setLookAndFeel() {
+   
+        self.startFromOldStateSwitchOutlet.isOn ? (self.ONLblOutlet.isHidden = false) : (self.ONLblOutlet.isHidden = true)
     self.currencyChoiceButtonOutlet.setTitle(self.currencyChoice.rawValue + " >", for: .normal)
         self.startButtonOutlet.cornerRadius = self.startButtonOutlet.bounds.width / 2
     }
@@ -53,12 +56,27 @@ class EntryViewController: UIViewController, CurrencyDelegate {
             productsChoiceVC.products?.append(EggsProduct())
             productsChoiceVC.products?.append(MilkProduct())
             productsChoiceVC.products?.append(BeansProduct())
-            // start with virgin-basket
+            // inject initial data to basket
             productsChoiceVC.basket = Basket()
             productsChoiceVC.basket?.basketCurrency = self.currencyChoice
-            // if you want to start with virgin-basket, uncomment the following line of code....
-            productsChoiceVC.basket?.itemsTypes = [ProductName]()
-            productsChoiceVC.basket?.productAmounts = [ProductName:Int]()
+            // update products
+            if let _ = productsChoiceVC.basket?.itemsTypes,
+                let products = productsChoiceVC.products,
+                let amounts = productsChoiceVC.basket?.productAmounts {
+                for (prodIdx, prod) in products.enumerated() {
+                    for (key, value) in amounts {  // amounts is of type [ProductName: Int]
+                        if key == prod.productName {
+                            productsChoiceVC.products![prodIdx].nrOfProducts = value
+                        }
+                    }
+                }
+            }
+            if !self.startFromOldStateSwitchOutlet.isOn {
+                // if you want to start with virgin-basket, uncomment the following line of code....
+                productsChoiceVC.basket?.itemsTypes = [ProductName]()
+                productsChoiceVC.basket?.productAmounts = [ProductName:Int]()
+            }
+
         default:
             break
         }
@@ -69,13 +87,14 @@ class EntryViewController: UIViewController, CurrencyDelegate {
         self.performSegue(withIdentifier: SegueNames.GoToCurrencyChoice.rawValue, sender: nil)
     }
     
-    @IBAction func startButtonPressed(_ sender: Any) {
-    }
-    
     // MARK: Back Delegates
     func setBackDataNow(currency: Currency) {
         self.currencyChoice = currency
         self.currencyChoiceButtonOutlet.setTitle(currency.rawValue + " >", for: .normal)
+    }
+    
+    @IBAction func startFromOldStateSwitchChanged(_ sender: Any) {
+        self.startFromOldStateSwitchOutlet.isOn ? (self.ONLblOutlet.isHidden = false) : (self.ONLblOutlet.isHidden = true)
     }
 }
 
