@@ -53,7 +53,7 @@ struct AppConstants {
     
     // API keys definition
     struct APIKeys {
-        static let CURRENCY_PLAYER_API_KEY = "ab2446bbbee6833d646f746c76b446bd"
+        static let CURRENCY_PLAYER_API_KEY = "03473b3bd92c474ec03b79d967bc7f99"
     }
     
     // color definitions
