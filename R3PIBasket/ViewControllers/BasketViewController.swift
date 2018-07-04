@@ -108,6 +108,8 @@ class BasketViewController: UIViewController, CurrencyDelegate, ProductsDelegate
             let summaryVC = segue.destination as! SummaryViewController
             summaryVC.title = "Purchase Summary"
             summaryVC.delegate = self
+            // since summary might go back directly to continue shopping - we need to assign this delegate as well..
+            summaryVC.delegate = self.presentingViewController as? ProductsDelegate
             summaryVC.basket = self.basket
             summaryVC.conversionFactor = self.conversionFactor
             summaryVC.basketProducts = [Product]()
@@ -160,6 +162,7 @@ class BasketViewController: UIViewController, CurrencyDelegate, ProductsDelegate
         
         basketCell.deleteItemCompletion = { newAmount in
             self.basket?.productAmounts![ProductName(rawValue: self.basketProducts![indexPath.row].productName.rawValue)!] = newAmount
+            
         }
         
         basketCell.removeFromBasketBtnCompletion = { productN in
@@ -207,50 +210,49 @@ class BasketViewController: UIViewController, CurrencyDelegate, ProductsDelegate
     
     func getNewestConversionFactor() {
         
-        if self.self.basket?.basketCurrency != .USD {
-            if iKKHelperClass.checkWiFi() {
-                
-                // make a network-call to get most up-to-date Currency conversion
-                // ..do this in the background not to bother the UI..
-                let workItem_BG_CurrencyFetch = DispatchWorkItem {
-                    let currencyAPI = CurrencyPlayerAPI()
-                    let currency = self.basket?.basketCurrency ?? .USD
-                    currencyAPI.getConversionFactor(currency: currency) { (conversionFactor, error) in
-                        
-                        // check for error
-                        guard error == nil else {
-                            // inform user that the network-fetch was not successful
-                            let alertController = UIAlertController(title: "Currency Conversion Error!", message: "The Network-provider was not able to deliver the required Currency-Information.\r\n\r\nPlease try again later...", preferredStyle: UIAlertControllerStyle.alert)
-                            alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default,handler: nil))
-                            self.present(alertController, animated: true, completion: nil)
-                            return
-                        }
-                        // if successful:
-                        // get currency-conversion-factor from API
-                        // (there is only one non-nil quotes-entry since we only asked for one)
-                        self.conversionFactor = conversionFactor
-                        // reload tableView with new conversion-factor
-                        DispatchQueue.main.async {
-                            self.basketTableView.reloadData()
-                        }
+        if iKKHelperClass.checkWiFi() {
+            
+            // make a network-call to get most up-to-date Currency conversion
+            // ..do this in the background not to bother the UI..
+            let workItem_BG_CurrencyFetch = DispatchWorkItem {
+                let currencyAPI = CurrencyPlayerAPI()
+                let currency = self.basket?.basketCurrency ?? .USD
+                currencyAPI.getConversionFactor(currency: currency) { (conversionFactor, error) in
+                    
+                    // check for error
+                    guard error == nil else {
+                        // inform user that the network-fetch was not successful
+                        let alertController = UIAlertController(title: "Currency Conversion Error!", message: "The Network-provider was not able to deliver the required Currency-Information.\r\n\r\nPlease try again later...", preferredStyle: UIAlertControllerStyle.alert)
+                        alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default,handler: nil))
+                        self.present(alertController, animated: true, completion: nil)
+                        return
                     }
-                }
-                // then call the new workItem to be carried out in a concurrent BG-thread
-                DispatchQueue.global(qos:.userInteractive).async(execute: workItem_BG_CurrencyFetch)
-            } else {
-                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(300)) {
-                    let alertController = UIAlertController(title: "No inernet !", message: "You must be online in order to get newest product currency information.", preferredStyle: UIAlertControllerStyle.alert)
-                    alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default,handler: nil))
-                    self.present(alertController, animated: true, completion: nil)
-                    // also set currency to USD since no online-data available
-                    self.basket?.basketCurrency = .USD
-                    self.setCurrencyForAllProducts()
-                    self.conversionFactor = 1
-                    self.currencyChoiceBtnOutlet.setTitle((self.basket?.basketCurrency.rawValue ?? "") + " >", for: .normal)
+                    // if successful:
+                    // assign the API-result's currency-conversion-factor
+                    self.conversionFactor = conversionFactor
                     // reload tableView with new conversion-factor
                     DispatchQueue.main.async {
                         self.basketTableView.reloadData()
                     }
+                }
+            }
+            // then call the new workItem to be carried out in a concurrent BG-thread
+            DispatchQueue.global(qos:.userInteractive).async(execute: workItem_BG_CurrencyFetch)
+        } else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(300)) {
+                if self.self.basket?.basketCurrency != .USD {
+                    let alertController = UIAlertController(title: "No inernet !", message: "You must be online in order to get newest product currency information.", preferredStyle: UIAlertControllerStyle.alert)
+                    alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default,handler: nil))
+                    self.present(alertController, animated: true, completion: nil)
+                }
+                // also set currency to USD since no online-data available
+                self.basket?.basketCurrency = .USD
+                self.setCurrencyForAllProducts()
+                self.conversionFactor = 1
+                self.currencyChoiceBtnOutlet.setTitle((self.basket?.basketCurrency.rawValue ?? "") + " >", for: .normal)
+                // reload tableView with new conversion-factor
+                DispatchQueue.main.async {
+                    self.basketTableView.reloadData()
                 }
             }
         }

@@ -78,7 +78,6 @@ class ProductChoiceCustomTableViewCell: UITableViewCell, UITextFieldDelegate {
     
     @IBAction func deleteBtnPressed(_ sender: Any) {
         self.nrOfProductsTextField.text = "\(0)"
-        self.greenIsInBasketView.isHidden = true
         
         // execute the addToBasket-completion closure
         if let deleteItemAction = self.deleteItemBtnCompletion {
