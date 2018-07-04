@@ -33,6 +33,11 @@
 		8F536FDE20E63F2F00321A8D /* iKKProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F536FDD20E63F2F00321A8D /* iKKProtocols.swift */; };
 		8F536FE120E6421300321A8D /* CurrencyCustomTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F536FE020E6421300321A8D /* CurrencyCustomTableViewCell.swift */; };
 		8F536FE420E6443C00321A8D /* UIButton_iKK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F536FE320E6443C00321A8D /* UIButton_iKK.swift */; };
+		8FE0E20B20ECCB3900F1A235 /* EntryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FE0E20A20ECCB3900F1A235 /* EntryViewModel.swift */; };
+		8FE0E20D20ECCCF400F1A235 /* ProductChoiceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FE0E20C20ECCCF400F1A235 /* ProductChoiceViewModel.swift */; };
+		8FE0E20F20ECD8B000F1A235 /* BasketViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FE0E20E20ECD8B000F1A235 /* BasketViewModel.swift */; };
+		8FE0E21120ECDAFC00F1A235 /* NewCurrencyFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FE0E21020ECDAFC00F1A235 /* NewCurrencyFetcher.swift */; };
+		8FE0E21320ECE0ED00F1A235 /* SummaryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FE0E21220ECE0ED00F1A235 /* SummaryViewModel.swift */; };
 		8FF9C08C20E9650F003A140C /* ProductChoiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FF9C08B20E9650F003A140C /* ProductChoiceViewController.swift */; };
 		8FF9C08E20E965DB003A140C /* ProductChoiceCustomTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FF9C08D20E965DB003A140C /* ProductChoiceCustomTableViewCell.swift */; };
 		8FF9C09020E96B9C003A140C /* ProductsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FF9C08F20E96B9C003A140C /* ProductsModel.swift */; };
@@ -88,6 +93,11 @@
 		8F536FDD20E63F2F00321A8D /* iKKProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iKKProtocols.swift; sourceTree = "<group>"; };
 		8F536FE020E6421300321A8D /* CurrencyCustomTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrencyCustomTableViewCell.swift; sourceTree = "<group>"; };
 		8F536FE320E6443C00321A8D /* UIButton_iKK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIButton_iKK.swift; sourceTree = "<group>"; };
+		8FE0E20A20ECCB3900F1A235 /* EntryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryViewModel.swift; sourceTree = "<group>"; };
+		8FE0E20C20ECCCF400F1A235 /* ProductChoiceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductChoiceViewModel.swift; sourceTree = "<group>"; };
+		8FE0E20E20ECD8B000F1A235 /* BasketViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasketViewModel.swift; sourceTree = "<group>"; };
+		8FE0E21020ECDAFC00F1A235 /* NewCurrencyFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCurrencyFetcher.swift; sourceTree = "<group>"; };
+		8FE0E21220ECE0ED00F1A235 /* SummaryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryViewModel.swift; sourceTree = "<group>"; };
 		8FF9C08B20E9650F003A140C /* ProductChoiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductChoiceViewController.swift; sourceTree = "<group>"; };
 		8FF9C08D20E965DB003A140C /* ProductChoiceCustomTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductChoiceCustomTableViewCell.swift; sourceTree = "<group>"; };
 		8FF9C08F20E96B9C003A140C /* ProductsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductsModel.swift; sourceTree = "<group>"; };
@@ -144,6 +154,7 @@
 			children = (
 				8F5256F020E61A58008CC8E8 /* APIs */,
 				8F52570420E62593008CC8E8 /* NetworkFetchersParsers */,
+				8F536FE220E6442000321A8D /* Custom_UI_elements */,
 				8F5256EE20E61A46008CC8E8 /* Models */,
 				8F5256EF20E61A51008CC8E8 /* ViewModels */,
 				8F536FDF20E641D700321A8D /* CustomTableViewCells */,
@@ -189,6 +200,10 @@
 		8F5256EF20E61A51008CC8E8 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				8FE0E20A20ECCB3900F1A235 /* EntryViewModel.swift */,
+				8FE0E20C20ECCCF400F1A235 /* ProductChoiceViewModel.swift */,
+				8FE0E20E20ECD8B000F1A235 /* BasketViewModel.swift */,
+				8FE0E21220ECE0ED00F1A235 /* SummaryViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -253,8 +268,8 @@
 		8F52570420E62593008CC8E8 /* NetworkFetchersParsers */ = {
 			isa = PBXGroup;
 			children = (
-				8F536FE220E6442000321A8D /* Custom_UI_elements */,
 				8F52570520E625D0008CC8E8 /* CurrencyPlayerFetcher.swift */,
+				8FE0E21020ECDAFC00F1A235 /* NewCurrencyFetcher.swift */,
 			);
 			path = NetworkFetchersParsers;
 			sourceTree = "<group>";
@@ -419,7 +434,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				8F52570320E624CF008CC8E8 /* CurrencyPlayerAPI.swift in Sources */,
+				8FE0E20B20ECCB3900F1A235 /* EntryViewModel.swift in Sources */,
 				8F536FDE20E63F2F00321A8D /* iKKProtocols.swift in Sources */,
+				8FE0E21320ECE0ED00F1A235 /* SummaryViewModel.swift in Sources */,
 				8F52570620E625D0008CC8E8 /* CurrencyPlayerFetcher.swift in Sources */,
 				8F52570020E6212D008CC8E8 /* Quotes.swift in Sources */,
 				8F52570920E62708008CC8E8 /* iKKErrors.swift in Sources */,
@@ -430,12 +447,15 @@
 				8F5256C320E61A3F008CC8E8 /* EntryViewController.swift in Sources */,
 				8F0861EF20EA7DB000199314 /* BasketViewController.swift in Sources */,
 				8FF9C09020E96B9C003A140C /* ProductsModel.swift in Sources */,
+				8FE0E20F20ECD8B000F1A235 /* BasketViewModel.swift in Sources */,
 				8F5256F720E61BB8008CC8E8 /* iKKExtensions.swift in Sources */,
 				8F5256F320E61B29008CC8E8 /* AppConstants.swift in Sources */,
 				8F4C114620EB9E990093E00B /* SummaryCustomTableViewCell.swift in Sources */,
+				8FE0E21120ECDAFC00F1A235 /* NewCurrencyFetcher.swift in Sources */,
 				8F52570B20E63660008CC8E8 /* CurrenyChoiceTableViewController.swift in Sources */,
 				8F536FDC20E63B3700321A8D /* Currency.swift in Sources */,
 				8F5256F820E61BB8008CC8E8 /* iKKFunctions.swift in Sources */,
+				8FE0E20D20ECCCF400F1A235 /* ProductChoiceViewModel.swift in Sources */,
 				8F52570120E6212D008CC8E8 /* CurrencyModelResult.swift in Sources */,
 				8F536FE120E6421300321A8D /* CurrencyCustomTableViewCell.swift in Sources */,
 				8FF9C08C20E9650F003A140C /* ProductChoiceViewController.swift in Sources */,

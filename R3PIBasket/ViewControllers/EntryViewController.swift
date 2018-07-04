@@ -18,13 +18,7 @@ class EntryViewController: UIViewController, CurrencyDelegate {
     @IBOutlet weak var startFromOldStateSwitchOutlet: UISwitch!
     @IBOutlet weak var ONLblOutlet: UILabel!
     
-    var currencyChoice: Currency {
-        get { return Currency(rawValue: self.defaults.object(forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_CURRENCY_CHOICE) as? String ?? "USD")! }
-        set {
-            self.defaults.set(newValue.rawValue, forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_CURRENCY_CHOICE)
-            self.defaults.synchronize()
-        }
-    }
+    var entryViewModel = EntryViewModel()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,7 +28,7 @@ class EntryViewController: UIViewController, CurrencyDelegate {
     func setLookAndFeel() {
    
         self.startFromOldStateSwitchOutlet.isOn ? (self.ONLblOutlet.isHidden = false) : (self.ONLblOutlet.isHidden = true)
-    self.currencyChoiceButtonOutlet.setTitle(self.currencyChoice.rawValue + " >", for: .normal)
+    self.currencyChoiceButtonOutlet.setTitle(self.entryViewModel.currencyChoice.rawValue + " >", for: .normal)
         self.startButtonOutlet.cornerRadius = self.startButtonOutlet.bounds.width / 2
     }
     
@@ -51,30 +45,30 @@ class EntryViewController: UIViewController, CurrencyDelegate {
             let productsChoiceVC = segue.destination as! ProductChoiceViewController
             productsChoiceVC.title = "Product Choice"
             // inject initial data to productsChoice-VC's objects
-            productsChoiceVC.products = [Product]()
-            productsChoiceVC.products?.append(PeasProduct())
-            productsChoiceVC.products?.append(EggsProduct())
-            productsChoiceVC.products?.append(MilkProduct())
-            productsChoiceVC.products?.append(BeansProduct())
+            productsChoiceVC.prodVM.products = [Product]()
+            productsChoiceVC.prodVM.products?.append(PeasProduct())
+            productsChoiceVC.prodVM.products?.append(EggsProduct())
+            productsChoiceVC.prodVM.products?.append(MilkProduct())
+            productsChoiceVC.prodVM.products?.append(BeansProduct())
             // inject initial data to basket
-            productsChoiceVC.basket = Basket()
-            productsChoiceVC.basket?.basketCurrency = self.currencyChoice
+            productsChoiceVC.prodVM.basket = Basket()
+            productsChoiceVC.prodVM.basket?.basketCurrency = self.entryViewModel.currencyChoice
             // update products
-            if let _ = productsChoiceVC.basket?.itemsTypes,
-                let products = productsChoiceVC.products,
-                let amounts = productsChoiceVC.basket?.productAmounts {
+            if let _ = productsChoiceVC.prodVM.basket?.itemsTypes,
+                let products = productsChoiceVC.prodVM.products,
+                let amounts = productsChoiceVC.prodVM.basket?.productAmounts {
                 for (prodIdx, prod) in products.enumerated() {
                     for (key, value) in amounts {  // amounts is of type [ProductName: Int]
                         if key == prod.productName {
-                            productsChoiceVC.products![prodIdx].nrOfProducts = value
+                            productsChoiceVC.prodVM.products![prodIdx].nrOfProducts = value
                         }
                     }
                 }
             }
             if !self.startFromOldStateSwitchOutlet.isOn {
                 // if you want to start with virgin-basket, uncomment the following line of code....
-                productsChoiceVC.basket?.itemsTypes = [ProductName]()
-                productsChoiceVC.basket?.productAmounts = [ProductName:Int]()
+                productsChoiceVC.prodVM.basket?.itemsTypes = [ProductName]()
+                productsChoiceVC.prodVM.basket?.productAmounts = [ProductName:Int]()
             }
 
         default:
@@ -89,7 +83,7 @@ class EntryViewController: UIViewController, CurrencyDelegate {
     
     // MARK: Back Delegates
     func setBackDataNow(currency: Currency) {
-        self.currencyChoice = currency
+        self.entryViewModel.currencyChoice = currency
         self.currencyChoiceButtonOutlet.setTitle(currency.rawValue + " >", for: .normal)
     }
     

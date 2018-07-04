@@ -11,8 +11,11 @@ import UIKit
 
 // Notification Names
 extension Notification.Name {
-    static var TestNotification: Notification.Name {
-        return .init(rawValue: "TestNotification")
+    static var AlertNotif: Notification.Name {
+        return .init(rawValue: "AlertNotification")
+    }
+    static var TableViewReloadNotif: Notification.Name {
+        return .init(rawValue: "TableViewReload")
     }
 }
 

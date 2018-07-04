@@ -24,9 +24,7 @@ class BasketViewController: UIViewController, CurrencyDelegate, ProductsDelegate
     @IBOutlet weak var continueShoppingBtnOutlet: UIButton!
     @IBOutlet weak var goToPaymentBtnOutlet: UIButton!
     
-    var conversionFactor: Float?
-    var basketProducts: [Product]?
-    var basket: Basket?
+    var basketVM = BasketViewModel()
     
     override func viewDidLoad() {
         
@@ -39,15 +37,19 @@ class BasketViewController: UIViewController, CurrencyDelegate, ProductsDelegate
         self.view.addGestureRecognizer(tap)
         
         // set properties
-    self.currencyChoiceBtnOutlet.setTitle((self.basket?.basketCurrency.rawValue ?? "USD") + " >", for: .normal)
+        self.currencyChoiceBtnOutlet.setTitle((self.basketVM.basket?.basketCurrency.rawValue ?? "USD") + " >", for: .normal)
         
-        self.setCurrencyForAllProducts()
+        self.basketVM.setCurrencyForAllProducts()
         self.setLookAndFeel()
 
         // move view out of the way-observers when keyboard shows
         NotificationCenter.default.addObserver(self, selector: #selector(ProductChoiceViewController.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(ProductChoiceViewController.keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+        
+        // observer for productChoice-ViewModel callbacks
+        NotificationCenter.default.addObserver(self, selector: #selector(ProductChoiceViewController.showAlert), name: NSNotification.Name.AlertNotif, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(ProductChoiceViewController.doTableViewReload), name: NSNotification.Name.TableViewReloadNotif, object: nil)
     }
     
     @objc func keyboardWillShow(_ notification:Notification) {
@@ -61,6 +63,27 @@ class BasketViewController: UIViewController, CurrencyDelegate, ProductsDelegate
     {
         if let _ = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
             self.basketTableView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0)
+        }
+    }
+    
+    @objc func showAlert(_ notification: Notification) {
+        
+        guard let alertText = notification.object as? [String:String] else {
+            let object = notification.object as Any
+            assertionFailure("Invalid object: \(object)")
+            return
+        }
+        // inform user that the network-fetch was not successful
+        let alertController = UIAlertController(title: alertText["title"], message: alertText["message"], preferredStyle: UIAlertControllerStyle.alert)
+        alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default,handler: nil))
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
+    @objc func doTableViewReload() {
+        self.currencyChoiceBtnOutlet.setTitle((self.basketVM.basket?.basketCurrency.rawValue ?? "") + " >", for: .normal)
+        // reload tableView with new conversion-factor
+        DispatchQueue.main.async {
+            self.basketTableView.reloadData()
         }
     }
     
@@ -110,22 +133,22 @@ class BasketViewController: UIViewController, CurrencyDelegate, ProductsDelegate
             summaryVC.delegate = self
             // since summary might go back directly to continue shopping - we need to assign this delegate as well..
             summaryVC.delegate = self.presentingViewController as? ProductsDelegate
-            summaryVC.basket = self.basket
-            summaryVC.conversionFactor = self.conversionFactor
-            summaryVC.basketProducts = [Product]()
+            summaryVC.summaryVM.basket = self.basketVM.basket
+            summaryVC.summaryVM.conversionFactor = self.basketVM.conversionFactor
+            summaryVC.summaryVM.basketProducts = [Product]()
             // inject what you have from the basket into the new VC's products
-            if let itemTypes = self.basket?.itemsTypes {
+            if let itemTypes = self.basketVM.basket?.itemsTypes {
                 for (idx, item) in itemTypes.enumerated() {
                     if let anyProd = GenericProduct.createProduct(productName: item) {
                         
                         var anyProduct = anyProd
-                        summaryVC.basketProducts?.append(anyProduct)
-                        if let productName = self.basket?.itemsTypes?[idx],
+                        summaryVC.summaryVM.basketProducts?.append(anyProduct)
+                        if let productName = self.basketVM.basket?.itemsTypes?[idx],
                             let unitPrice = ProductUnitPriceInUSD.getUnitPriceInUSD(productName: productName) {
-                            let nrOfProducts = (self.basket?.productAmounts?[productName])!
+                            let nrOfProducts = (self.basketVM.basket?.productAmounts?[productName])!
                             anyProduct.productPrice = Float(nrOfProducts) * unitPrice
                             anyProduct.nrOfProducts = nrOfProducts
-                            summaryVC.basketProducts?[idx] = anyProduct
+                            summaryVC.summaryVM.basketProducts?[idx] = anyProduct
                         }
                     }
                 }
@@ -142,7 +165,7 @@ class BasketViewController: UIViewController, CurrencyDelegate, ProductsDelegate
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.basket?.itemsTypes?.count ?? 0
+        return self.basketVM.basket?.itemsTypes?.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -157,105 +180,44 @@ class BasketViewController: UIViewController, CurrencyDelegate, ProductsDelegate
         basketCell.configureCell(tag: indexPath.row)
         
         basketCell.updateBasketCompletion = { newAmount in
-            self.basket?.productAmounts![ProductName(rawValue: self.basketProducts![indexPath.row].productName.rawValue)!] = newAmount
+            self.basketVM.basket?.productAmounts![ProductName(rawValue: self.basketVM.basketProducts![indexPath.row].productName.rawValue)!] = newAmount
         }
         
         basketCell.deleteItemCompletion = { newAmount in
-            self.basket?.productAmounts![ProductName(rawValue: self.basketProducts![indexPath.row].productName.rawValue)!] = newAmount
+            self.basketVM.basket?.productAmounts![ProductName(rawValue: self.basketVM.basketProducts![indexPath.row].productName.rawValue)!] = newAmount
             
         }
         
         basketCell.removeFromBasketBtnCompletion = { productN in
             
-            self.basketProducts?.remove(at: indexPath.row)
+            self.basketVM.basketProducts?.remove(at: indexPath.row)
             if let productN = productN {
-                self.basket?.removeBasketItem(withName: productN)
+                self.basketVM.basket?.removeBasketItem(withName: productN)
                 // self.basket?.removeAmountItem(withName: productN)
             }
             self.basketTableView.reloadData()
         }
         
         // 1st: create temporary-product
-        var tempProduct = self.basketProducts![indexPath.row]
+        var tempProduct = self.basketVM.basketProducts![indexPath.row]
         // 2nd: assign the product
         basketCell.product = tempProduct
         let nrOfProducts = tempProduct.nrOfProducts
         basketCell.nrOfProductsTextField.text = "\(nrOfProducts)"
         //43rd: calculateConversion (order matters!)
-        basketCell.calculateConversion(conversionFactor: self.conversionFactor)
+        basketCell.calculateConversion(conversionFactor: self.basketVM.conversionFactor)
         return basketCell
     }
     
-    // MARK: Helper functions
-    
-    func setCurrencyForAllProducts() {
-        // set currency for all products
-        if let products = self.basketProducts {
-            for (idx, _) in products.enumerated() {
-                self.basketProducts?[idx].productCurrency = self.basket?.basketCurrency ?? .USD
-            }
-        }
-    }
+    // MARK: Delegate callback methods
     
     func signalProductUpdate() {
         // update currency
-    self.currencyChoiceBtnOutlet.setTitle((self.basket?.basketCurrency.rawValue ?? "") + " >", for: .normal)
-        self.setCurrencyForAllProducts()
-        self.getNewestConversionFactor()
+        self.currencyChoiceBtnOutlet.setTitle((self.basketVM.basket?.basketCurrency.rawValue ?? "") + " >", for: .normal)
+        self.basketVM.setCurrencyForAllProducts()
+        self.basketVM.getNewestConversionFactor()
         // update the productsTableView
         self.basketTableView.reloadData()
-    }
-    
-    // MARK: Network-calls
-    
-    func getNewestConversionFactor() {
-        
-        if iKKHelperClass.checkWiFi() {
-            
-            // make a network-call to get most up-to-date Currency conversion
-            // ..do this in the background not to bother the UI..
-            let workItem_BG_CurrencyFetch = DispatchWorkItem {
-                let currencyAPI = CurrencyPlayerAPI()
-                let currency = self.basket?.basketCurrency ?? .USD
-                currencyAPI.getConversionFactor(currency: currency) { (conversionFactor, error) in
-                    
-                    // check for error
-                    guard error == nil else {
-                        // inform user that the network-fetch was not successful
-                        let alertController = UIAlertController(title: "Currency Conversion Error!", message: "The Network-provider was not able to deliver the required Currency-Information.\r\n\r\nPlease try again later...", preferredStyle: UIAlertControllerStyle.alert)
-                        alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default,handler: nil))
-                        self.present(alertController, animated: true, completion: nil)
-                        return
-                    }
-                    // if successful:
-                    // assign the API-result's currency-conversion-factor
-                    self.conversionFactor = conversionFactor
-                    // reload tableView with new conversion-factor
-                    DispatchQueue.main.async {
-                        self.basketTableView.reloadData()
-                    }
-                }
-            }
-            // then call the new workItem to be carried out in a concurrent BG-thread
-            DispatchQueue.global(qos:.userInteractive).async(execute: workItem_BG_CurrencyFetch)
-        } else {
-            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(300)) {
-                if self.self.basket?.basketCurrency != .USD {
-                    let alertController = UIAlertController(title: "No inernet !", message: "You must be online in order to get newest product currency information.", preferredStyle: UIAlertControllerStyle.alert)
-                    alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default,handler: nil))
-                    self.present(alertController, animated: true, completion: nil)
-                }
-                // also set currency to USD since no online-data available
-                self.basket?.basketCurrency = .USD
-                self.setCurrencyForAllProducts()
-                self.conversionFactor = 1
-                self.currencyChoiceBtnOutlet.setTitle((self.basket?.basketCurrency.rawValue ?? "") + " >", for: .normal)
-                // reload tableView with new conversion-factor
-                DispatchQueue.main.async {
-                    self.basketTableView.reloadData()
-                }
-            }
-        }
     }
     
     // MARK: Target-Actions
@@ -277,9 +239,9 @@ class BasketViewController: UIViewController, CurrencyDelegate, ProductsDelegate
     // MARK: Delegate callbacks
     
     func setBackDataNow(currency: Currency) {
-        self.basket?.basketCurrency = currency
+        self.basketVM.basket?.basketCurrency = currency
         self.currencyChoiceBtnOutlet.setTitle(currency.rawValue + " >", for: .normal)
-        self.setCurrencyForAllProducts()
-        self.getNewestConversionFactor()
+        self.basketVM.setCurrencyForAllProducts()
+        self.basketVM.getNewestConversionFactor()
     }
 }

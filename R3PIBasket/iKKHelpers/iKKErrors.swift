@@ -13,4 +13,9 @@ enum JSONFetchError: Error {
     case objectSerialization(reason: String)
 }
 
+enum CurrencyConversionError: Error {
+    case conversionError(reason: String)
+    case objectSerialization(reason: String)
+}
+
 
