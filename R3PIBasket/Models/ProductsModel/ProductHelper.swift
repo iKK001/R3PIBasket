@@ -16,16 +16,16 @@ class ProductHelper {
         
         if let itemTypes = basket?.itemsTypes {
             for (idx, item) in itemTypes.enumerated() {
-                if let anyProd = GenericProduct.createProduct(productName: item) {
-                    var anyProduct = anyProd
-                    returnBasketProducts.append(anyProduct)
-                    if let productName = basket?.itemsTypes?[idx] {
-                        let unitPrice = (ProductUnitPriceInUSD.getUnitPriceInUSD(productName: productName) ?? 1.0)
-                        let nrOfProducts = (basket?.productAmounts?[productName])!
-                        anyProduct.productPrice = Float(nrOfProducts) * unitPrice
-                        anyProduct.nrOfProducts = nrOfProducts
-                        returnBasketProducts[idx] = anyProduct
-                    }
+                let prodFactory = ProductFactory(prodName: item)
+                let anyProd = prodFactory.product
+                var anyProduct = anyProd
+                returnBasketProducts.append(anyProduct)
+                if let productName = basket?.itemsTypes?[idx] {
+                    let unitPrice = (ProductUnitPriceInUSD.getUnitPriceInUSD(prodName: productName) ?? 0.0)
+                    let nrOfProducts = basket?.productAmounts?[productName] ?? 0
+                    anyProduct.productPrice = Float(nrOfProducts) * unitPrice
+                    anyProduct.nrOfProducts = nrOfProducts
+                    returnBasketProducts[idx] = anyProduct
                 }
             }
         }

@@ -31,13 +31,13 @@ class ProductChoiceViewModel {
         self.products?[tag].nrOfProducts = amount
     }
     
-    func setNewAmountInBasket(productName: ProductName?, amount: Int) {
+    func setNewAmountInBasket(productName: String?, amount: Int) {
         if let prodName = productName {
-            self.basket?.productAmounts![prodName] = amount
+            self.basket?.productAmounts?[prodName] = amount
         }
     }
     
-    func updateAmountsAndNumberOfItems(tag: Int, productName: ProductName, amount: Int) {
+    func updateAmountsAndNumberOfItems(tag: Int, productName: String, amount: Int) {
         
         if amount > 0 {
             // if basket does not contain product-Item, add it

@@ -37,7 +37,7 @@ class BasketViewController: UIViewController, CurrencyDelegate, BasketDelegate, 
         self.view.addGestureRecognizer(tap)
         
         // set properties
-        self.currencyChoiceBtnOutlet.setTitle((self.basketVM.basket?.basketCurrency.rawValue ?? "USD") + " >", for: .normal)
+        self.currencyChoiceBtnOutlet.setTitle((self.basketVM.basket?.basketCurrency.rawValue ?? AppConstants.DefaultValues.USD_Currency) + " >", for: .normal)
         
         self.basketVM.setCurrencyForAllProducts()
         self.setLookAndFeel()
@@ -167,12 +167,25 @@ class BasketViewController: UIViewController, CurrencyDelegate, BasketDelegate, 
         basketCell.configureCell(tag: indexPath.row)
         
         basketCell.updateBasketCompletion = { newAmount in
-            self.basketVM.basket?.productAmounts![ProductName(rawValue: self.basketVM.basketProducts![indexPath.row].productName.rawValue)!] = newAmount
-        }
+            
+            let products = ProductNames()
+            for prod in products.products {
+                if prod == self.basketVM.basketProducts![indexPath.row].productName {
+                    self.basketVM.basket?.productAmounts?[prod] = newAmount
+                    break
+                }
+            }
+         }
         
         basketCell.deleteItemCompletion = { newAmount in
-            self.basketVM.basket?.productAmounts![ProductName(rawValue: self.basketVM.basketProducts![indexPath.row].productName.rawValue)!] = newAmount
             
+            let products = ProductNames()
+            for prod in products.products {
+                if prod == self.basketVM.basketProducts![indexPath.row].productName {
+                    self.basketVM.basket?.productAmounts?[prod] = newAmount
+                    break
+                }
+            }
         }
         
         basketCell.removeFromBasketBtnCompletion = { productN in
@@ -186,7 +199,7 @@ class BasketViewController: UIViewController, CurrencyDelegate, BasketDelegate, 
         }
         
         // 1st: create temporary-product
-        var tempProduct = self.basketVM.basketProducts![indexPath.row]
+        let tempProduct = self.basketVM.basketProducts![indexPath.row]
         // 2nd: assign the product
         basketCell.product = tempProduct
         let nrOfProducts = tempProduct.nrOfProducts

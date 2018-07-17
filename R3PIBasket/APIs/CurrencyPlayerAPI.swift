@@ -13,7 +13,7 @@ class CurrencyPlayerAPI {
     func getConversionFactor(currency: Currency, completionHandler: ((Float?, Error?) -> Void)?) {
     
         let access_key = AppConstants.APIKeys.CURRENCY_PLAYER_API_KEY
-        let source = "USD"
+        let source = AppConstants.DefaultValues.USD_Currency
         let currencies = currency.rawValue 
         let format = "1"
     

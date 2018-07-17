@@ -50,10 +50,6 @@ class CurrenyChoiceTableViewController: UIViewController, UITableViewDataSource,
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
     }
-    
-    override var supportedInterfaceOrientations : UIInterfaceOrientationMask {
-        return UIInterfaceOrientationMask.portrait
-    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

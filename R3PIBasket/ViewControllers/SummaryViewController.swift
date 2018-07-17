@@ -27,6 +27,7 @@ class SummaryViewController: UIViewController, CurrencyDelegate, UITableViewDele
     @IBOutlet weak var totalSummaryPrice: UILabel!
     @IBOutlet weak var totalSummaryCurrency: UILabel!
     @IBOutlet weak var currencyLiteralLabel: UILabel!
+    @IBOutlet weak var spacerLeftSpaceUpperConstraint: NSLayoutConstraint!
     
     var summaryVM = SummaryViewModel()
     
@@ -36,7 +37,7 @@ class SummaryViewController: UIViewController, CurrencyDelegate, UITableViewDele
         self.summaryTableView.delegate = self
         self.summaryTableView.dataSource = self
         self.setLookAndFeel()
-        self.currencyChoiceBtnOutlet.setTitle((self.summaryVM.basket?.basketCurrency.rawValue ?? "USD") + " >", for: .normal)
+    self.currencyChoiceBtnOutlet.setTitle((self.summaryVM.basket?.basketCurrency.rawValue ?? AppConstants.DefaultValues.USD_Currency) + " >", for: .normal)
         
         self.setCurrencyForAllProducts()
         self.summaryVM.getNewestConversionFactor()
@@ -61,7 +62,7 @@ class SummaryViewController: UIViewController, CurrencyDelegate, UITableViewDele
     }
     
     @objc func doTableViewReload() {
-        self.currencyChoiceBtnOutlet.setTitle((self.summaryVM.basket?.basketCurrency.rawValue ?? "") + " >", for: .normal)
+        self.currencyChoiceBtnOutlet.setTitle((self.summaryVM.basket?.basketCurrency.rawValue ?? AppConstants.DefaultValues.USD_Currency) + " >", for: .normal)
         // reload tableView with new conversion-factor
         DispatchQueue.main.async {
             self.summaryTableView.reloadData()
@@ -76,6 +77,18 @@ class SummaryViewController: UIViewController, CurrencyDelegate, UITableViewDele
     }
     
     func setLookAndFeel() {
+        switch AppConstants.FEATUREFLAG.DEVICE_MODEL_NAME {
+        case Devices.IPhone5, Devices.IPhone5S, Devices.IPhone5C:
+            self.spacerLeftSpaceUpperConstraint.constant = 195
+        case Devices.IPhone6, Devices.IPhone6S, Devices.IPhone7, Devices.IPhone8:
+            self.spacerLeftSpaceUpperConstraint.constant = 200
+        case Devices.IPhone6Plus, Devices.IPhone6SPlus, Devices.IPhone7Plus, Devices.IPhone8Plus:
+            self.spacerLeftSpaceUpperConstraint.constant = 205
+        case Devices.IPhoneX:
+            self.spacerLeftSpaceUpperConstraint.constant = 205
+        default:
+            self.spacerLeftSpaceUpperConstraint.constant = 195
+        }
         self.summaryTableView.isScrollEnabled = false
         self.tableViewHeightConstraint.constant = CGFloat(self.summaryVM.basket?.itemsTypes?.count ?? 0) * cellHeight
     }
@@ -85,10 +98,13 @@ class SummaryViewController: UIViewController, CurrencyDelegate, UITableViewDele
         
         switch segue.identifier! {
         case SegueNames.GoToCurrencyChoice.rawValue:
-            let currencySearchVC = segue.destination as! CurrenyChoiceTableViewController
-            currencySearchVC.delegate = self
-            currencySearchVC.currentTag = 0
-            currencySearchVC.title = "Currency Choice"
+            if let currencySearchVC = segue.destination as? CurrenyChoiceTableViewController {
+                currencySearchVC.delegate = self
+                currencySearchVC.currentTag = 0
+                currencySearchVC.title = "Currency Choice"
+            } else {
+                
+            }
         default:
             break
         }
@@ -116,7 +132,7 @@ class SummaryViewController: UIViewController, CurrencyDelegate, UITableViewDele
         summaryCell.configureCell(tag: indexPath.row)
         
         // 1st: create temporary-product
-        var tempProduct = self.summaryVM.basketProducts![indexPath.row]
+        let tempProduct = self.summaryVM.basketProducts![indexPath.row]
         // 2nd: assign the product
         summaryCell.product = tempProduct
         let nrOfProducts = tempProduct.nrOfProducts
@@ -138,13 +154,13 @@ class SummaryViewController: UIViewController, CurrencyDelegate, UITableViewDele
     func setCurrencyForAllProducts() {
 
         self.summaryVM.setCurrencyForAllProducts()
-        self.totalSummaryCurrency.text = self.summaryVM.basket?.basketCurrency.rawValue ?? "USD"
+        self.totalSummaryCurrency.text = self.summaryVM.basket?.basketCurrency.rawValue ?? AppConstants.DefaultValues.USD_Currency
         self.currencyLiteralLabel.text = (self.summaryVM.basket?.basketCurrency.countryName ?? "United States Dollar") + ")"
     }
     
     func calculatePurchaseSummary() {
         let total = self.summaryVM.calculatePurchaseSummary()
-        self.totalSummaryPrice.text = String(format: "%.2f", total)
+        self.totalSummaryPrice.text = iKKHelperClass.setPriceText(price: total)
     }
 
     // MARK: Target-Actions

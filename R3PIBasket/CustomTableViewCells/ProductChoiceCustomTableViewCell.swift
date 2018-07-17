@@ -24,11 +24,11 @@ class ProductChoiceCustomTableViewCell: UITableViewCell, UITextFieldDelegate {
     
     var product: Product! {
         didSet {
-            self.productName.text = self.product.productName.rawValue
+            self.productName.text = self.product.productName
             self.productImage.image = self.product.productImage
             self.productCurrency.text = self.product.productCurrency.rawValue
-            self.productPrice.text = String(format: "%.2f", self.product.productPrice)
-            self.unitDescriptionLabel.text = self.product.unitDescriptionLabel.rawValue
+            self.productPrice.text = iKKHelperClass.setPriceText(price: self.product.productPrice)
+            self.unitDescriptionLabel.text = self.product.unitDescriptionLabel ?? ""
             self.nrOfProductsTextField.text = "\(self.product.nrOfProducts)"
         }
     }
@@ -43,11 +43,11 @@ class ProductChoiceCustomTableViewCell: UITableViewCell, UITextFieldDelegate {
     
     func calculateConversion(conversionFactor: Float?) {
         if let conversionF = conversionFactor {
-            let USDprice: Float = self.product.productPrice
+            let USDprice: Float = self.product.productPrice ?? 0.0
             let newPrice: Float = USDprice * conversionF
-            self.productPrice.text = String(format: "%.2f", newPrice)
+            self.productPrice.text = iKKHelperClass.setPriceText(price: newPrice)
         } else {
-            self.productPrice.text = String(format: "%.2f", self.product.productPrice)
+            self.productPrice.text = iKKHelperClass.setPriceText(price: self.product.productPrice)
         }
     }
     

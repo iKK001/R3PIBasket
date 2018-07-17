@@ -44,4 +44,16 @@ class iKKHelperClass {
 			return true
 		}
 	}
+    
+    static func setPriceText(price: Float?) -> String {
+        if let price = price {
+            if price != 0.0 {
+                return String(format: "%.2f", price)
+            } else {
+                return "?"
+            }
+        } else {
+            return "?"
+        }
+    }
 }

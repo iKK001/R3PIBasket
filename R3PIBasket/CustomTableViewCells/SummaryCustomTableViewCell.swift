@@ -19,34 +19,52 @@ class SummaryCustomTableViewCell: UITableViewCell {
     @IBOutlet weak var productPrice: UILabel!
     @IBOutlet weak var unitDescriptionLabel: UILabel!
     @IBOutlet weak var nrOfProductsLabel: UILabel!
+    @IBOutlet weak var spacerLeftSpaceLowerConstraint: NSLayoutConstraint!
     
     var product: Product! {
         didSet {
-            self.productName.text = self.product.productName.rawValue
+            self.productName.text = self.product.productName
             self.productImage.image = self.product.productImage
             self.productCurrency1.text = self.product.productCurrency.rawValue
             self.productCurrency2.text = self.product.productCurrency.rawValue
-            self.unitPrice.text = String(format: "%.2f", ProductUnitPriceInUSD.getUnitPriceInUSD(productName: self.product.productName) ?? "0.00")
-            self.productPrice.text = String(format: "%.2f", self.product.productPrice)
-            self.unitDescriptionLabel.text = self.product.unitDescriptionLabel.description()
+            self.unitPrice.text = iKKHelperClass.setPriceText(price: ProductUnitPriceInUSD.getUnitPriceInUSD(prodName: self.product.productName))
+            self.productPrice.text = iKKHelperClass.setPriceText(price: self.product.productPrice)
+            self.unitDescriptionLabel.text = self.product.unitDescriptionLabel ?? ""
             self.nrOfProductsLabel.text = "\(self.product.nrOfProducts)"
         }
     }
     
     func configureCell(tag: Int) {
         self.tag = tag
+        
+        switch AppConstants.FEATUREFLAG.DEVICE_MODEL_NAME {
+        case Devices.IPhone5, Devices.IPhone5S, Devices.IPhone5C:
+            self.spacerLeftSpaceLowerConstraint.constant = 195
+        case Devices.IPhone6, Devices.IPhone6S, Devices.IPhone7, Devices.IPhone8:
+            self.spacerLeftSpaceLowerConstraint.constant = 200
+        case Devices.IPhone6Plus, Devices.IPhone6SPlus, Devices.IPhone7Plus, Devices.IPhone8Plus:
+            self.spacerLeftSpaceLowerConstraint.constant = 205
+        case Devices.IPhoneX:
+            self.spacerLeftSpaceLowerConstraint.constant = 205
+        default:
+            self.spacerLeftSpaceLowerConstraint.constant = 195
+        }
     }
     
     func calculateConversion(conversionFactor: Float?) {
         if let conversionF = conversionFactor {
-            let USDprice: Float = self.product.productPrice
+            let USDprice: Float = self.product.productPrice ?? 0.0
             let newPrice: Float = USDprice * conversionF
-            let unitPrice: Float = (ProductUnitPriceInUSD.getUnitPriceInUSD(productName: self.product.productName) ?? 1.0) * conversionF
-            self.productPrice.text = String(format: "%.2f", newPrice)
-            self.unitPrice.text = String(format: "%.2f", unitPrice)
+            self.productPrice.text = iKKHelperClass.setPriceText(price: newPrice)
+            if let unitPriceNonConverted: Float = ProductUnitPriceInUSD.getUnitPriceInUSD(prodName: self.product.productName) {
+                let unitPrice = unitPriceNonConverted * conversionF
+                self.unitPrice.text = iKKHelperClass.setPriceText(price: unitPrice)
+            } else {
+                self.unitPrice.text = iKKHelperClass.setPriceText(price: nil)
+            }
         } else {
-            self.productPrice.text = String(format: "%.2f", self.product.productPrice)
-            self.unitPrice.text = String(format: "%.2f", (ProductUnitPriceInUSD.getUnitPriceInUSD(productName: self.product.productName) ?? 1.0))
+            self.productPrice.text = iKKHelperClass.setPriceText(price: self.product.productPrice)
+            self.unitPrice.text = iKKHelperClass.setPriceText(price: ProductUnitPriceInUSD.getUnitPriceInUSD(prodName: self.product.productName))
         }
     }
 }

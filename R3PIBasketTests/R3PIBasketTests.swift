@@ -40,7 +40,7 @@ class R3PIBasketTests: XCTestCase {
         let currencyFetcher = CurrencyPlayerFetcher()
         if iKKHelperClass.checkWiFi() {
             let access_key = AppConstants.APIKeys.CURRENCY_PLAYER_API_KEY
-            let source = "USD"
+            let source = AppConstants.DefaultValues.USD_Currency
             // we are asking for CHF in this test
             let currencies = "CHF"
             let format = "1"
@@ -131,20 +131,21 @@ class R3PIBasketTests: XCTestCase {
         
         // define your test basket
         var myBasket: Basket = Basket()
-        var myItems: [ProductName] = [ProductName]()
-        var myProductAmounts: [ProductName: Int] = [ProductName: Int]()
+        var myItems: [String] = [String]()
+        var myProductAmounts: [String: Int] = [String: Int]()
         myBasket.basketCurrency = myCurrency
         myItems.removeAll()
-        myItems.append(.Peas)
-        myItems.append(.Eggs)
-        myItems.append(.Milk)
-        myItems.append(.Beans)
+
+        let products = ProductNames()
+        for prod in products.products {
+            myItems.append(prod)
+        }
         myBasket.itemsTypes = myItems
         myProductAmounts.removeAll()
-        myProductAmounts[.Peas] = 12
-        myProductAmounts[.Eggs] = 13
-        myProductAmounts[.Milk] = 15
-        myProductAmounts[.Beans] = 17
+        myProductAmounts["Peas"] = 12
+        myProductAmounts["Eggs"] = 13
+        myProductAmounts["Milk"] = 15
+        myProductAmounts["Beans"] = 17
         myBasket.productAmounts = myProductAmounts
         
         // define ViewModel under test
@@ -160,10 +161,10 @@ class R3PIBasketTests: XCTestCase {
         total = summaryVM.calculatePurchaseSummary()
         
         // make your own calculation by hand
-        let peasPrice = Float(myProductAmounts[.Peas]!) * Float(0.95)   // definition
-        let eggsPrice = Float(myProductAmounts[.Eggs]!) * Float(2.10)   // definition
-        let milkPrice = Float(myProductAmounts[.Milk]!) * Float(1.30)   // definition
-        let beansPrice = Float(myProductAmounts[.Beans]!) * Float(0.73) // definition
+        let peasPrice = Float(myProductAmounts["Peas"]!) * Float(0.95)   // definition
+        let eggsPrice = Float(myProductAmounts["Eggs"]!) * Float(2.10)   // definition
+        let milkPrice = Float(myProductAmounts["Milk"]!) * Float(1.30)   // definition
+        let beansPrice = Float(myProductAmounts["Beans"]!) * Float(0.73) // definition
         let calculationByHand: Float = Float((peasPrice + eggsPrice + milkPrice + beansPrice) * myConversionFactor)
         
         // make sure the two are equal (within accuracy)
@@ -180,20 +181,20 @@ class R3PIBasketTests: XCTestCase {
         
         // define your test basket
         var myBasket: Basket = Basket()
-        var myItems: [ProductName] = [ProductName]()
-        var myProductAmounts: [ProductName: Int] = [ProductName: Int]()
+        var myItems: [String] = [String]()
+        var myProductAmounts: [String: Int] = [String: Int]()
         myBasket.basketCurrency = myCurrency
         myItems.removeAll()
-        myItems.append(.Peas)
-        myItems.append(.Eggs)
-        myItems.append(.Milk)
-        myItems.append(.Beans)
+        let products = ProductNames()
+        for prod in products.products {
+            myItems.append(prod)
+        }
         myBasket.itemsTypes = myItems
         myProductAmounts.removeAll()
-        myProductAmounts[.Peas] = 1
-        myProductAmounts[.Eggs] = 2
-        myProductAmounts[.Milk] = 3
-        myProductAmounts[.Beans] = 4
+        myProductAmounts["Peas"] = 1
+        myProductAmounts["Eggs"] = 2
+        myProductAmounts["Milk"] = 3
+        myProductAmounts["Beans"] = 4
         myBasket.productAmounts = myProductAmounts
         
         // define ViewModel under test
@@ -218,61 +219,64 @@ class R3PIBasketTests: XCTestCase {
     
     func testGetNewestConversionFactor() {
         
-        // define your test-currency
-        var myCurrency: Currency = .USD
+        if iKKHelperClass.checkWiFi() {
         
-        // define your test basket
-        var myBasket: Basket = Basket()
-        var myItems: [ProductName] = [ProductName]()
-        var myProductAmounts: [ProductName: Int] = [ProductName: Int]()
-        myBasket.basketCurrency = myCurrency
-        myItems.removeAll()
-        myItems.append(.Peas)
-        myItems.append(.Eggs)
-        myItems.append(.Milk)
-        myItems.append(.Beans)
-        myBasket.itemsTypes = myItems
-        myProductAmounts.removeAll()
-        myProductAmounts[.Peas] = 1
-        myProductAmounts[.Eggs] = 2
-        myProductAmounts[.Milk] = 3
-        myProductAmounts[.Beans] = 4
-        myBasket.productAmounts = myProductAmounts
-        
-        // define ViewModel under test
-        let summaryVM = SummaryViewModel()
-        summaryVM.conversionFactor = 3.3333
-        summaryVM.basket = myBasket
-        
-        // get the newest conversion Factor
-        let expectation1 = expectation(description: "Completed")
-        summaryVM.getNewestConversionFactor()
-        
-        // the method just called will take a moment - we wait
-        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(2000)) {
-            expectation1.fulfill()
+            // define your test-currency
+            var myCurrency: Currency = .USD
+            
+            // define your test basket
+            var myBasket: Basket = Basket()
+            var myItems: [String] = [String]()
+            var myProductAmounts: [String: Int] = [String: Int]()
+            myBasket.basketCurrency = myCurrency
+            myItems.removeAll()
+            let products = ProductNames()
+            for prod in products.products {
+                myItems.append(prod)
+            }
+            myBasket.itemsTypes = myItems
+            myProductAmounts.removeAll()
+            myProductAmounts["Peas"] = 1
+            myProductAmounts["Eggs"] = 2
+            myProductAmounts["Milk"] = 3
+            myProductAmounts["Beans"] = 4
+            myBasket.productAmounts = myProductAmounts
+            
+            // define ViewModel under test
+            let summaryVM = SummaryViewModel()
+            summaryVM.conversionFactor = 3.3333
+            summaryVM.basket = myBasket
+            
+            // get the newest conversion Factor
+            let expectation1 = expectation(description: "Completed")
+            summaryVM.getNewestConversionFactor()
+            
+            // the method just called will take a moment - we wait
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(2000)) {
+                expectation1.fulfill()
+            }
+            waitForExpectations(timeout: 2.0, handler: nil)
+            
+            // compare the conversionFactor now after the 2 seconds
+            XCTAssert(summaryVM.conversionFactor == 1.0)
+            
+            // define a second test-currency
+            myCurrency = .AED
+            // and assign it to your basket
+            myBasket.basketCurrency = myCurrency
+            
+            // get the newest conversion Factor
+            let expectation2 = expectation(description: "Completed")
+            summaryVM.getNewestConversionFactor()
+            
+            // the method just called will take a moment - we wait
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(2000)) {
+                expectation2.fulfill()
+            }
+            waitForExpectations(timeout: 2.0, handler: nil)
+            
+            // compare the conversionFactor now after the 2 seconds
+            XCTAssert(summaryVM.conversionFactor != 1.0)
         }
-        waitForExpectations(timeout: 2.0, handler: nil)
-        
-        // compare the conversionFactor now after the 2 seconds
-        XCTAssert(summaryVM.conversionFactor == 1.0)
-        
-        // define a second test-currency
-        myCurrency = .AED
-        // and assign it to your basket
-        myBasket.basketCurrency = myCurrency
-        
-        // get the newest conversion Factor
-        let expectation2 = expectation(description: "Completed")
-        summaryVM.getNewestConversionFactor()
-        
-        // the method just called will take a moment - we wait
-        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(2000)) {
-            expectation2.fulfill()
-        }
-        waitForExpectations(timeout: 2.0, handler: nil)
-        
-        // compare the conversionFactor now after the 2 seconds
-        XCTAssert(summaryVM.conversionFactor != 1.0)
     }
 }

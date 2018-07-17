@@ -54,10 +54,13 @@ class EntryViewController: UIViewController, CurrencyDelegate {
             productsChoiceVC.title = "Product Choice"
             // inject initial data to productsChoice-VC's objects
             productsChoiceVC.prodVM.products = [Product]()
-            productsChoiceVC.prodVM.products?.append(PeasProduct())
-            productsChoiceVC.prodVM.products?.append(EggsProduct())
-            productsChoiceVC.prodVM.products?.append(MilkProduct())
-            productsChoiceVC.prodVM.products?.append(BeansProduct())
+            
+            let prodNames = ProductNames()
+            for (_, prod) in prodNames.products.enumerated() {
+                let prodProduced = ProductFactory(prodName: prod)
+                productsChoiceVC.prodVM.products?.append(prodProduced.product)
+            }
+
             // inject initial data to basket
             productsChoiceVC.prodVM.basket = Basket()
             productsChoiceVC.prodVM.basket?.basketCurrency = self.entryViewModel.currencyChoice
@@ -75,8 +78,8 @@ class EntryViewController: UIViewController, CurrencyDelegate {
             }
             if !self.startFromOldStateSwitchOutlet.isOn {
                 // if you want to start with virgin-basket, uncomment the following line of code....
-                productsChoiceVC.prodVM.basket?.itemsTypes = [ProductName]()
-                productsChoiceVC.prodVM.basket?.productAmounts = [ProductName:Int]()
+                productsChoiceVC.prodVM.basket?.itemsTypes = [String]()
+                productsChoiceVC.prodVM.basket?.productAmounts = [String:Int]()
             }
 
         default:

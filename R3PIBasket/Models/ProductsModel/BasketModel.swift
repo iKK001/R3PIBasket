@@ -9,17 +9,17 @@
 import Foundation
 
 protocol BasketItem {
-    var itemsTypes: [ProductName]? { get set }
-    var productAmounts: [ProductName: Int]? { get set }
+    var itemsTypes: [String]? { get set }
+    var productAmounts: [String: Int]? { get set }
     var basketCurrency: Currency { get set }
 }
 
 extension BasketItem {
-    var itemsTypes: [ProductName]? {
-        return [ProductName]()
+    var itemsTypes: [String]? {
+        return [String]()
     }
-    var productAmounts: [ProductName: Int]? {
-        return [ProductName:Int]()
+    var productAmounts: [String: Int]? {
+        return [String:Int]()
     }
     var basketCurrency: Currency {
         return .USD
@@ -30,69 +30,28 @@ struct Basket: BasketItem {
     
     fileprivate let defaults = UserDefaults(suiteName: AppConstants.USERDEFAULTS.USER_DEFAULT_SUITE_NAME)!
     
-    var itemsTypes: [ProductName]? {
+    var itemsTypes: [String]? {
         get {
             // persistency-GET
-            // since only STRING-arrays can be restored - some sort of wrapper is needed
-            var _itemsTypes: [ProductName]? = [ProductName]()
-            let _itemTypeStrArr = self.defaults.object(forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_BASKET_ITEM_TYPES) as? [String] ?? [""]
-            _itemsTypes?.removeAll()
-            for (_, itemT) in _itemTypeStrArr.enumerated()  {
-                if let item = ProductName(rawValue: itemT) {
-                    _itemsTypes?.append(item)
-                }
-            }
-            return _itemsTypes
+            let itemTypeStrArr = self.defaults.object(forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_BASKET_ITEM_TYPES) as? [String]
+            return itemTypeStrArr
         }
         set {
             // persistency-SET
-            // since only STRING-arrays can be stored - some sort of wrapper is needed
-            var _itemsTypeStrArr: [String] = [String]()
-            _itemsTypeStrArr.removeAll()
-            if let items = newValue {
-                for item in items {
-                    _itemsTypeStrArr.append(item.rawValue)
-                }
-            }
-            self.defaults.set(_itemsTypeStrArr, forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_BASKET_ITEM_TYPES)
-            
+            self.defaults.set(newValue, forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_BASKET_ITEM_TYPES)
             self.defaults.synchronize()
         }
     }
     
-    var productAmounts: [ProductName: Int]? {
+    var productAmounts: [String: Int]? {
         get {
             // persistency-GET
-            // since only INT-arrays and STRING-arrays can be restored - some sort of wrapper is needed
-            var _productAmounts: [ProductName: Int] = [ProductName: Int]()
-            let productAmountIntArr = self.defaults.object(forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_BASKET_PRODUCT_AMOUNT) as? [Int] ?? [0]
-            let productAmountKeyArr = self.defaults.object(forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_BASKET_PRODUCT_AMOUNT_KEY) as? [String] ?? [""]
-            _productAmounts.removeAll()
-            for (idx, _) in productAmountIntArr.enumerated()  {
-                if productAmountKeyArr.count > idx {
-                    if let prodN = ProductName(rawValue: productAmountKeyArr[idx]) {
-                        _productAmounts[prodN] = productAmountIntArr[idx]
-                    }
-                }
-            }
-            return _productAmounts
+            let productAmountDict = self.defaults.object(forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_BASKET_PRODUCT_AMOUNT_KEY) as? [String: Int]
+            return productAmountDict
         }
         set {
             // persistency-SET
-            // since only INT-arrays and STRING-arrays can be stored - some sort of wrapper is needed
-            var _productAmounts: [Int] = [0]
-            var _productAmountKeys: [String] = [""]
-            _productAmounts.removeAll()
-            _productAmountKeys.removeAll()
-            if let items = self.itemsTypes {  // !!!!
-                for item in items {
-                    _productAmounts.append(newValue![item] ?? 0)
-                    _productAmountKeys.append(item.rawValue)
-                }
-            }
-            self.defaults.set(_productAmounts, forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_BASKET_PRODUCT_AMOUNT)
-            self.defaults.set(_productAmountKeys, forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_BASKET_PRODUCT_AMOUNT_KEY)
-            
+            self.defaults.set(newValue, forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_BASKET_PRODUCT_AMOUNT_KEY)
             self.defaults.synchronize()
         }
     }
@@ -100,7 +59,7 @@ struct Basket: BasketItem {
         get {
             // persistency-GET
             // since only STRING's can be restored - some sort of wrapper is needed
-            let _currency: Currency = Currency(rawValue: self.defaults.object(forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_CURRENCY_CHOICE) as? String ?? "USD")!
+            let _currency: Currency = Currency(rawValue: self.defaults.object(forKey: AppConstants.USERDEFAULTS.USER_DEFAULT_CURRENCY_CHOICE) as? String ?? AppConstants.DefaultValues.USD_Currency)!
             return _currency
         }
         set {
@@ -113,23 +72,22 @@ struct Basket: BasketItem {
         }
     }
     
-    mutating func removeBasketItem(withName: ProductName) {
+    mutating func removeBasketItem(withName: String) {
         var indexToRemove: Int = -1
-        var nameToRemove: ProductName? = nil
+        var nameToRemove: String = ""
+        let products = ProductNames()
         if let itemTs = self.itemsTypes {
             for (idx, name) in itemTs.enumerated() {
                 if name == withName {
                     indexToRemove = idx
-                    nameToRemove = name
+                    nameToRemove = products.getProductName(idx: idx)
                     break
                 }
             }
         }
         if indexToRemove != -1 {
-            if let ntr = nameToRemove {
-                self.itemsTypes?.remove(at: indexToRemove)
-                self.productAmounts?.removeValue(forKey: ntr)
-            }
+            self.itemsTypes?.remove(at: indexToRemove)
+            self.productAmounts?.removeValue(forKey: nameToRemove)
         }
     }
 }

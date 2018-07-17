@@ -29,7 +29,7 @@ class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableVi
         
         // set properties
         self.nrOfItemsLblOutlet.text = "\(self.prodVM.basket?.itemsTypes?.count ?? 0)"
-        self.currencyChoiceBtnOutlet.setTitle((self.prodVM.basket?.basketCurrency.rawValue ?? "USD") + " >", for: .normal)
+        self.currencyChoiceBtnOutlet.setTitle((self.prodVM.basket?.basketCurrency.rawValue ?? AppConstants.DefaultValues.USD_Currency) + " >", for: .normal)
         
         self.prodVM.setCurrencyForAllProducts()
         self.prodVM.getNewestConversionFactor()
@@ -142,7 +142,7 @@ class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableVi
         
         // completion-handler when AddBasket-Button of a cell is pressed
         productCell.addToBasketBtnCompletion = { tag in
-            self.prodVM.updateAmountsAndNumberOfItems(tag: tag, productName: ProductName(rawValue: productCell.productName.text ?? "")!, amount: Int(productCell.nrOfProductsTextField.text ?? "") ?? 0)
+            self.prodVM.updateAmountsAndNumberOfItems(tag: tag, productName: (productCell.productName.text ?? ""), amount: Int(productCell.nrOfProductsTextField.text ?? "") ?? 0)
             self.nrOfItemsLblOutlet.text = "\(self.prodVM.basket?.itemsTypes?.count ?? 0)"
         }
         

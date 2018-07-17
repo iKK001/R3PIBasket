@@ -31,7 +31,7 @@ class SummaryViewModel {
         var total: Float = 0.0
         if let products = self.basketProducts {
             for (_, product) in products.enumerated() {
-                total = total + product.productPrice *  (self.conversionFactor ?? 1.0)
+                total = total + (product.productPrice ?? 0.0) *  (self.conversionFactor ?? 1.0)
             }
         }
         return total

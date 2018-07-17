@@ -18,18 +18,18 @@ class BasketCustomTableViewCell: UITableViewCell, UITextFieldDelegate {
     @IBOutlet weak var unitDescriptionLabel: UILabel!
     @IBOutlet weak var nrOfProductsTextField: UITextField!
     
-    var removeFromBasketBtnCompletion : ((ProductName?) -> Void)? = nil
+    var removeFromBasketBtnCompletion : ((String?) -> Void)? = nil
     var deleteItemCompletion : ((Int?) -> Void)? = nil
     var updateBasketCompletion : ((Int?) -> Void)? = nil
     var conversionFactor: Float?
 
     var product: Product! {
         didSet {
-            self.productName.text = self.product.productName.rawValue
+            self.productName.text = self.product.productName
             self.productImage.image = self.product.productImage
             self.productCurrency.text = self.product.productCurrency.rawValue
-            self.productPrice.text = String(format: "%.2f", self.product.productPrice)
-            self.unitDescriptionLabel.text = self.product.unitDescriptionLabel.description()
+            self.productPrice.text = iKKHelperClass.setPriceText(price: self.product.productPrice)
+            self.unitDescriptionLabel.text = self.product.unitDescriptionLabel ?? ""
             self.nrOfProductsTextField.text = "\(self.product.nrOfProducts)"
         }
     }
@@ -46,11 +46,11 @@ class BasketCustomTableViewCell: UITableViewCell, UITextFieldDelegate {
         
         if let conversionF = conversionFactor {
             let prodN = self.product.productName
-            let USDprice: Float = Float(self.product.nrOfProducts) * (ProductUnitPriceInUSD.getUnitPriceInUSD(productName: prodN) ?? 0.0)
+            let USDprice: Float = Float(self.product.nrOfProducts) * (ProductUnitPriceInUSD.getUnitPriceInUSD(prodName: prodN) ?? 0.0)
             let newPrice: Float = USDprice * conversionF
-            self.productPrice.text = String(format: "%.2f", newPrice)
+            self.productPrice.text = iKKHelperClass.setPriceText(price: newPrice)
         } else {
-            self.productPrice.text = String(format: "%.2f", self.product.productPrice)
+            self.productPrice.text = iKKHelperClass.setPriceText(price: self.product.productPrice)
         }
     }
     
@@ -100,7 +100,14 @@ class BasketCustomTableViewCell: UITableViewCell, UITextFieldDelegate {
     @IBAction func removeFromBasketBtnPressed(_ sender: Any) {
         // execute the removeFromBasketCompletion closure
         if let removeFromBasketBtnAction = self.removeFromBasketBtnCompletion {
-            removeFromBasketBtnAction(ProductName(rawValue: self.productName.text ?? ""))
+            
+            let products = ProductNames()
+            for prod in products.products {
+                if prod == (self.productName.text ?? "") {
+                    removeFromBasketBtnAction(prod)
+                    break
+                }
+            }
         }
     }
 }
