@@ -133,7 +133,6 @@
 		8F5256B420E61A3F008CC8E8 = {
 			isa = PBXGroup;
 			children = (
-				8F5256F920E61CFF008CC8E8 /* Network */,
 				8F5256BF20E61A3F008CC8E8 /* R3PIBasket */,
 				8F5256D420E61A40008CC8E8 /* R3PIBasketTests */,
 				8F5256DF20E61A40008CC8E8 /* R3PIBasketUITests */,
@@ -154,12 +153,13 @@
 		8F5256BF20E61A3F008CC8E8 /* R3PIBasket */ = {
 			isa = PBXGroup;
 			children = (
+				8F5256F920E61CFF008CC8E8 /* Network */,
 				8F5256F020E61A58008CC8E8 /* APIs */,
 				8F52570420E62593008CC8E8 /* NetworkFetchersParsers */,
-				8F536FE220E6442000321A8D /* Custom_UI_elements */,
 				8F5256EE20E61A46008CC8E8 /* Models */,
 				8F5256EF20E61A51008CC8E8 /* ViewModels */,
 				8F536FDF20E641D700321A8D /* CustomTableViewCells */,
+				8F536FE220E6442000321A8D /* Custom_UI_elements */,
 				8F5256F120E61AB1008CC8E8 /* ViewControllers */,
 				8F5256C020E61A3F008CC8E8 /* AppDelegate.swift */,
 				8F5256F220E61B28008CC8E8 /* AppConstants.swift */,
@@ -194,6 +194,7 @@
 			isa = PBXGroup;
 			children = (
 				8FF9C09120E96BB7003A140C /* ProductsModel */,
+				8FED6A5B20FF3F28008A7239 /* BasketModel */,
 				8F5256FD20E6211E008CC8E8 /* CurrencyPlayerModel */,
 			);
 			path = Models;
@@ -295,10 +296,17 @@
 			path = Custom_UI_elements;
 			sourceTree = "<group>";
 		};
-		8FF9C09120E96BB7003A140C /* ProductsModel */ = {
+		8FED6A5B20FF3F28008A7239 /* BasketModel */ = {
 			isa = PBXGroup;
 			children = (
 				8F0861EC20EA4C1100199314 /* BasketModel.swift */,
+			);
+			path = BasketModel;
+			sourceTree = "<group>";
+		};
+		8FF9C09120E96BB7003A140C /* ProductsModel */ = {
+			isa = PBXGroup;
+			children = (
 				8FF9C08F20E96B9C003A140C /* ProductsModel.swift */,
 				8FE0E21420ECFDF400F1A235 /* ProductHelper.swift */,
 			);

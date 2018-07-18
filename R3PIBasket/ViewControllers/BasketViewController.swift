@@ -37,7 +37,7 @@ class BasketViewController: UIViewController, CurrencyDelegate, BasketDelegate, 
         self.view.addGestureRecognizer(tap)
         
         // set properties
-        self.currencyChoiceBtnOutlet.setTitle((self.basketVM.basket?.basketCurrency.rawValue ?? AppConstants.DefaultValues.USD_Currency) + " >", for: .normal)
+    self.currencyChoiceBtnOutlet.setTitle((self.basketVM.basket?.basketCurrency.rawValue ?? AppConstants.DefaultValues.USD_Currency) + " >", for: .normal)
         
         self.basketVM.setCurrencyForAllProducts()
         self.setLookAndFeel()
@@ -80,7 +80,7 @@ class BasketViewController: UIViewController, CurrencyDelegate, BasketDelegate, 
     }
     
     @objc func doTableViewReload() {
-        self.currencyChoiceBtnOutlet.setTitle((self.basketVM.basket?.basketCurrency.rawValue ?? "") + " >", for: .normal)
+        self.currencyChoiceBtnOutlet.setTitle((self.basketVM.basket?.basketCurrency.rawValue ?? AppConstants.DefaultValues.USD_Currency) + " >", for: .normal)
         // reload tableView with new conversion-factor
         DispatchQueue.main.async {
             self.basketTableView.reloadData()
@@ -175,7 +175,7 @@ class BasketViewController: UIViewController, CurrencyDelegate, BasketDelegate, 
                     break
                 }
             }
-         }
+        }
         
         basketCell.deleteItemCompletion = { newAmount in
             
@@ -213,7 +213,7 @@ class BasketViewController: UIViewController, CurrencyDelegate, BasketDelegate, 
     
     func signalBasketUpdate() {
         // update currency
-    self.currencyChoiceBtnOutlet.setTitle((self.basketVM.basket?.basketCurrency.rawValue ?? "") + " >", for: .normal)
+    self.currencyChoiceBtnOutlet.setTitle((self.basketVM.basket?.basketCurrency.rawValue ?? AppConstants.DefaultValues.USD_Currency) + " >", for: .normal)
         self.basketVM.setCurrencyForAllProducts()
         self.basketVM.getNewestConversionFactor()
         // update the productsTableView

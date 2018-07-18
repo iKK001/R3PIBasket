@@ -72,7 +72,7 @@ class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableVi
     }
             
     @objc func doTableViewReload() {
-        self.currencyChoiceBtnOutlet.setTitle((self.prodVM.basket?.basketCurrency.rawValue ?? "") + " >", for: .normal)
+        self.currencyChoiceBtnOutlet.setTitle((self.prodVM.basket?.basketCurrency.rawValue ?? AppConstants.DefaultValues.USD_Currency) + " >", for: .normal)
         // reload tableView with new conversion-factor
         DispatchQueue.main.async {
             self.productTableView.reloadData()
@@ -181,7 +181,7 @@ class ProductChoiceViewController: UIViewController, CurrencyDelegate, UITableVi
     func signalProductUpdate() {
         
         self.prodVM.signalProductUpdate()
-        self.currencyChoiceBtnOutlet.setTitle((self.prodVM.basket?.basketCurrency.rawValue ?? "") + " >", for: .normal)
+        self.currencyChoiceBtnOutlet.setTitle((self.prodVM.basket?.basketCurrency.rawValue ?? AppConstants.DefaultValues.USD_Currency) + " >", for: .normal)
         self.nrOfItemsLblOutlet.text = "\(self.prodVM.basket?.itemsTypes?.count ?? 0)"
     }
 }

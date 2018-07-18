@@ -69,7 +69,7 @@ class EntryViewController: UIViewController, CurrencyDelegate {
                 let products = productsChoiceVC.prodVM.products,
                 let amounts = productsChoiceVC.prodVM.basket?.productAmounts {
                 for (prodIdx, prod) in products.enumerated() {
-                    for (key, value) in amounts {  // amounts is of type [ProductName: Int]
+                    for (key, value) in amounts {
                         if key == prod.productName {
                             productsChoiceVC.prodVM.products![prodIdx].nrOfProducts = value
                         }
