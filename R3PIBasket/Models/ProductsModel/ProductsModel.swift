@@ -97,18 +97,18 @@ class ProductFactory {
     var product: Product
     
     init(prodName: String) {
-        self.product = Product(productName: prodName, productImage: UIImage(named: prodName + ".png"), productCurrency: .USD, productPrice: 0.0, unitDescriptionLabel: ProductUnitDescription.getProductUnitDescription(prodName: prodName), nrOfProducts: 0)
+        self.product = Product(productName: prodName, productImage: UIImage(named: prodName + ".png"), productCurrency: .USD, productPrice: ProductUnitPriceInUSD.getUnitPriceInUSD(prodName: prodName), unitDescriptionLabel: ProductUnitDescription.getProductUnitDescription(prodName: prodName), nrOfProducts: 0)
         
-        let productNames = ProductNames()
-        for prod in productNames.products.lazy {
-            if prod == prodName {
-                // overwrite name-dependent properties - if there...
-                // (the rest is by default from the Protocol-extension)
-                product.productName = prod
-                product.productImage = UIImage(named: prod + ".png")
-                product.productPrice = ProductUnitPriceInUSD.getUnitPriceInUSD(prodName: prodName)
-                product.unitDescriptionLabel = ProductUnitDescription.getProductUnitDescription(prodName: prod)
-            }
-        }
+//        let productNames = ProductNames()
+//        for prod in productNames.products.lazy {
+//            if prod == prodName {
+//                // overwrite name-dependent properties - if there...
+//                // (the rest is by default from the Protocol-extension)
+//                product.productName = prod
+//                product.productImage = UIImage(named: prod + ".png")
+//                product.productPrice = ProductUnitPriceInUSD.getUnitPriceInUSD(prodName: prod)
+//                product.unitDescriptionLabel = ProductUnitDescription.getProductUnitDescription(prodName: prod)
+//            }
+//        }
     }
 }
